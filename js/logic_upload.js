@@ -81,6 +81,9 @@ async function handleRelayFiles(fileList) {
 }
 
 function processNextInQueue() {
+    // [Fix] Ensure Global Lock is released before starting next item
+    window.isGlobalProcessing = false;
+
     if (uploadQueue.length === 0) {
         isRelayMode = false;
         showAlert("✅ 모든 릴레이 업로드가 완료되었습니다!");
@@ -469,7 +472,8 @@ function confirmInterceptorName(skipFocus = false) {
 // --- Upload Card ---
 async function uploadCard(isConfirmed = false) {
     if (window.isGlobalProcessing) return; // Prevent Double
-    window.isGlobalProcessing = true;
+    // DON'T set isGlobalProcessing = true yet! Wait until validation passes.
+
     const fileInput = document.getElementById('file-input');
     const file = fileInput.files[0];
 
@@ -507,7 +511,7 @@ async function uploadCard(isConfirmed = false) {
                 part_of_speech: posVal,
                 language_category: catVal,
                 pronunciation: pronVal,
-                pronunciation: pronVal,
+                // Duplicate key removed
                 search_keywords: [
                     document.getElementById('input-tag1') ? document.getElementById('input-tag1').value.trim() : "",
                     document.getElementById('input-tag2') ? document.getElementById('input-tag2').value.trim() : "",
@@ -520,6 +524,9 @@ async function uploadCard(isConfirmed = false) {
     if (registrations.length === 0) {
         return showAlert("⚠️ 조음 분석 정보 필수\n\n좌측 '조음 분석' 영역에서 분석을 실행하거나,\n[+ 직접 추가하기]를 통해 음소 정보를 입력해야 합니다.");
     }
+
+    // Validation Passed: NOW set the lock
+    window.isGlobalProcessing = true;
 
     const formData = new FormData();
 
