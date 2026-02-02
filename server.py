@@ -26,6 +26,7 @@ import unicodedata
 
 # Configuration
 EXCEL_FILE = 'word.xlsx'
+REFERENCE_FILE = 'word.xlsx' # [FIX] Define REFERENCE_FILE
 DATA_FILE = 'data.js'
 USER_IMAGES_DIR = 'user_images'
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -871,33 +872,24 @@ def load_reference_dict():
     Priority 3: Local Excel File (Legacy)
     """
     global reference_cache
-    
-    # 1. Try Google Sheets (Primary) (DISABLED in decoupled mode, but function exists)
-    # The previous edit removed the logic but left a broken try/except block indentation
-    # Let's clean this function properly for decoupled mode.
-    
-    # In decoupled mode, this function should primarily rely on local cache or file if needed,
-    # BUT actually, we want to rely on word.xlsx (via load_data) for everything.
-    # However, existing code might still call load_reference_dict for some legacy checks.
-    # Let's make it minimal.
-    
-    # If using local file backup:
-    print("Using local file backup.")
+    global reference_cache_mtime
     
     path = os.path.join(BASE_DIR, REFERENCE_FILE)
     if not os.path.exists(path):
         return {}
-    if reference_cache:
-        print("Using memory cache (Sheet sync failed).")
-        return reference_cache
+        
+    # Check modification time
+    try:
+        current_mtime = os.path.getmtime(path)
+        # If cache exists and file hasn't changed, return cache
+        if reference_cache and reference_cache_mtime and current_mtime == reference_cache_mtime:
+            # print("Using memory cache (File unchanged).") # Reduce log spam
+            return reference_cache
+    except Exception as e:
+        print(f"Error checking mtime: {e}")
 
-    # 3. Fallback to Local File (if GSheet totally fails)
-    print("Using local file backup (Sheet sync failed).")
-    
-    path = os.path.join(BASE_DIR, REFERENCE_FILE)
-    if not os.path.exists(path):
-        print("Reference file not found.")
-        return {}
+    print("Reloading reference dictionary (File changed or no cache).")
+
 
     try:
         # Load without header to avoid encoding issues, assuming fixed column order
@@ -913,16 +905,16 @@ def load_reference_dict():
                 # Safe access by position
                 # [FIX] NFC Normalization for Word Key
                 # Ensure Dictionary Key is always NFC to match Client Input
-                word = str(row.iloc[1]).strip()
+                word = str(row.iloc[0]).strip()
                 if word and word != 'nan':
                     word = unicodedata.normalize('NFC', word)
-                raw_main = str(row.iloc[2]).strip()
-                raw_sub = str(row.iloc[3]).strip()
+                raw_main = str(row.iloc[1]).strip()
+                raw_sub = str(row.iloc[2]).strip()
 
-                # Check for pronunciation column (index 4) if exists
+                # Check for pronunciation column (index 3) if exists
                 pronunciation = ""
-                if len(row) > 4:
-                    val = str(row.iloc[4]).strip()
+                if len(row) > 3:
+                    val = str(row.iloc[3]).strip()
                     if val and val != 'nan':
                         pronunciation = val
 
@@ -983,16 +975,16 @@ def load_reference_dict():
                 if '(' not in sub_clean:
                     sub_clean = sub_clean.replace(",", "·").replace("/", "·")
                         
-                # [NEW] Load Tags (Cols 5, 6, 7 -> Index 5, 6, 7 in Excel?)
+                # [NEW] Load Tags (Cols 4, 5, 6 -> Index 4, 5, 6 in Excel?)
                 # wait, read_excel default header=0 implies row starts at 0?
                 # The code used iloc[1], iloc[2]... implying 0-based index from the excel read.
-                # Assuming Standard Layout: [No(0), Word(1), Main(2), Sub(3), Pron(4), Tag1(5), Tag2(6), Tag3(7)]
+                # Assuming Standard Layout: [Word(0), Main(1), Sub(2), Pron(3), Tag1(4), Tag2(5), Tag3(6)]
                 # If 'Pronunciation' is missing in some files, tags might be shifted?
                 # To be safe, let's assume fixed index since it's a template.
                 
                 tags = ["", "", ""]
                 for t_idx in range(3):
-                    col_idx = 5 + t_idx
+                    col_idx = 4 + t_idx
                     if len(row) > col_idx:
                         val = str(row.iloc[col_idx]).strip()
                         if val and val.lower() != 'nan':
@@ -1011,11 +1003,9 @@ def load_reference_dict():
                 continue
 
         print(f"Loaded {len(ref_dict)} words from reference dictionary.")
-        print(f"Loaded {len(ref_dict)} words from reference dictionary.")
         reference_cache = ref_dict
         reference_cache_mtime = current_mtime
         return reference_cache
-        return ref_dict
 
     except Exception as e:
         print(f"Error loading reference dictionary: {e}")
@@ -1112,14 +1102,25 @@ def analyze_name():
     ref_dict = load_reference_dict()
     reference_info = None
 
+    print(f"[DEBUG] Analyzing: '{name}' (Len: {len(name)}, Hex: {[hex(ord(c)) for c in name]})")
+    print(f"[DEBUG] RefDict Size: {len(ref_dict)}")
+    if ref_dict:
+        sample_key = list(ref_dict.keys())[0]
+        print(f"[DEBUG] Sample Key: '{sample_key}' (Hex: {[hex(ord(c)) for c in sample_key]})")
+
     # Try exact match
     if name in ref_dict:
+        print(f"[DEBUG] Success! Found '{name}' in dict.")
         reference_info = ref_dict[name]
     else:
+        print(f"[DEBUG] Failed to find '{name}'. Trying stripped...")
         # Try simplified match (remove spaces?)
         n_clean = name.replace(" ", "")
         if n_clean in ref_dict:
+            print(f"[DEBUG] Success! Found stripped '{n_clean}'.")
             reference_info = ref_dict[n_clean]
+        else:
+            print(f"[DEBUG] Totally failed to find '{name}'.")
 
     return jsonify({
         'suggestions': suggestions,

@@ -164,6 +164,8 @@ async function analyzeName(name) {
             })
         });
         const data = await response.json();
+        console.log("🔍 Server Response for '" + analysisName + "':", data); // [DEBUG LOG]
+
         // 1. Auto-Check Language Category
         // Fix: Server returns 'reference' or 'category_ref'
         const ref = data.reference || data.category_ref;
