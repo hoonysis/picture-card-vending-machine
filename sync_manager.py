@@ -109,78 +109,31 @@ class SyncManager:
 
                 # --- Normalization Logic (Copied from server.py) ---
                 
-                # --- Normalization Logic (Synced with server.py) ---
+                # --- Normalization Logic (Synced with server.py - STRICT MODE) ---
                 
-                # [NEW] Comprehensive Reverse Lookup for UI Taxonomy
-                TAXONOMY_MAP = {
-                    # 1. 사람/신체
-                    "사람": ("사람/신체", ""), "신체": ("사람/신체", ""), "가족": ("사람/신체", "가족"), "직업": ("사람/신체", "직업"), 
-                    "신체부위": ("사람/신체", "신체부위"), "옷": ("사람/신체", "옷·장신구"), "장신구": ("사람/신체", "옷·장신구"),
-                    "옷·장신구": ("사람/신체", "옷·장신구"),
+                # [CHANGED] Strict Matching Logic (User Request)
+                # No more fuzzy mapping. User guarantees Sheet text matches Admin UI text.
 
-                    # 2. 음식
-                    "음식": ("음식", ""), "과일": ("음식", "과일·채소"), "채소": ("음식", "과일·채소"), "과일·채소": ("음식", "과일·채소"),
-                    "식사": ("음식", "식사·요리"), "요리": ("음식", "식사·요리"), "식사·요리": ("음식", "식사·요리"),
-                    "간식": ("음식", "간식·음료"), "음료": ("음식", "간식·음료"), "간식·음료": ("음식", "간식·음료"),
-                    "식재료": ("음식", "식재료"),
+                def normalize_category(txt):
+                    if not txt or txt.lower() == 'nan': return ""
+                    # 1. Remove spaces
+                    clean = txt.replace(" ", "")
+                    # 2. Standardize Separators will be handled below
+                    return clean
 
-                    # 3. 생활/사물
-                    "생활": ("생활/사물", ""), "사물": ("생활/사물", ""), "가구": ("생활/사물", "가구·가전"), "가전": ("생활/사물", "가구·가전"), "가구·가전": ("생활/사물", "가구·가전"),
-                    "주방": ("생활/사물", "주방·욕실용품"), "욕실": ("생활/사물", "주방·욕실용품"), "주방·욕실용품": ("생활/사물", "주방·욕실용품"),
-                    "학용품": ("생활/사물", "학용품"), "장난감": ("생활/사물", "장난감"), "생활용품": ("생활/사물", "생활용품"),
+                main_clean = normalize_category(raw_main)
+                sub_clean = normalize_category(raw_sub)
 
-                    # 4. 장소/환경
-                    "장소": ("장소/환경", "장소"), "환경": ("장소/환경", ""), "동물": ("장소/환경", "동물·곤충"), "곤충": ("장소/환경", "동물·곤충"), "동물·곤충": ("장소/환경", "동물·곤충"),
-                    "식물": ("장소/환경", "식물·자연"), "자연": ("장소/환경", "식물·자연"), "식물·자연": ("장소/환경", "식물·자연"),
-                    "교통": ("장소/환경", "교통기관"), "교통기관": ("장소/환경", "교통기관"),
+                # Fix Sub-Category Separators: "/" or "," -> "·" (Admin UI uses · for sub-items)
+                sub_clean = sub_clean.replace("/", "·").replace(",", "·")
 
-                    # 5. 놀이/운동
-                    "놀이": ("놀이/운동", "취미·놀이"), "운동": ("놀이/운동", "운동"), # 운동 could be Sub or Main, context matters but default to Main is safer? No, usually if specific, it's sub.
-                    "악기": ("놀이/운동", "악기·예술"), "예술": ("놀이/운동", "악기·예술"), "악기·예술": ("놀이/운동", "악기·예술"),
-                    "취미": ("놀이/운동", "취미·놀이"), "취미·놀이": ("놀이/운동", "취미·놀이"),
-                    "기념일": ("놀이/운동", "기념일·행사"), "행사": ("놀이/운동", "기념일·행사"), "기념일·행사": ("놀이/운동", "기념일·행사"),
+                # Main Category Separators: Keep "/" (Admin UI uses "사람/신체")
+                # User must input "사람/신체". If they input "사람", it will fail finding the radio button.
+                # This is intended per user request ("Strict Match").
 
-                    # 6. 서술/개념
-                    "서술": ("서술/개념", ""), "개념": ("서술/개념", ""), "동작": ("서술/개념", ""), "상태": ("서술/개념", ""),
-                    "서술어": ("서술/개념", "서술어(행동/상태)"), "행동": ("서술/개념", "서술어(행동/상태)"),
-                    "감정": ("서술/개념", "감정"), "색깔": ("서술/개념", "색깔/모양"), "모양": ("서술/개념", "색깔/모양"), "색깔/모양": ("서술/개념", "색깔/모양"),
-                    "수": ("서술/개념", "수/양/비교"), "양": ("서술/개념", "수/양/비교"), "비교": ("서술/개념", "수/양/비교"), "수/양/비교": ("서술/개념", "수/양/비교"),
-                    "위치": ("서술/개념", "위치/방향"), "방향": ("서술/개념", "위치/방향"), "위치/방향": ("서술/개념", "위치/방향"),
-                    "세부": ("서술/개념", "세부부위"), "세부부위": ("서술/개념", "세부부위"),
-                    "범주": ("서술/개념", "범주어"), "범주어": ("서술/개념", "범주어"),
-                    "시간": ("서술/개념", "시간/순서/날짜"), "순서": ("서술/개념", "시간/순서/날짜"), "날짜": ("서술/개념", "시간/순서/날짜"), "시간/순서/날짜": ("서술/개념", "시간/순서/날짜"),
-                    "한글": ("서술/개념", "한글/글자"), "글자": ("서술/개념", "한글/글자"), "한글/글자": ("서술/개념", "한글/글자"),
-                    "말놀이": ("서술/개념", "말놀이(의성어,의태어)"), "의성어": ("서술/개념", "말놀이(의성어,의태어)"), "의태어": ("서술/개념", "말놀이(의성어,의태어)")
-                }
-
-                def map_category(raw_txt):
-                    clean = raw_txt.replace(" ", "").replace(".", "").strip()
-                    for k, (m, s) in TAXONOMY_MAP.items():
-                        if k in clean:
-                            return m, s
-                    return "", ""
-
-                # 1. Try mapping from Main Column
-                found_main, found_sub_from_main = map_category(raw_main)
-                
-                # 2. Try mapping from Sub Column (Usually more specific)
-                found_main_from_sub, found_sub = map_category(raw_sub)
-
-                # Prioritize: 
-                if found_main_from_sub:
-                    main_clean = found_main_from_sub
-                    sub_clean = found_sub
-                elif found_main:
-                    main_clean = found_main
-                    if found_sub_from_main:
-                       sub_clean = found_sub_from_main
-                    else:
-                        sub_clean = raw_sub.replace(" ", "")
-                else:
-                    main_clean = raw_main.replace(" ", "")
-                    sub_clean = raw_sub.replace(" ", "")
-
-                # Final Sub Cleanup (Parens check)
+                # Final Sub Cleanup (Parens check - legacy)
+                if '(' not in sub_clean:
+                    sub_clean = sub_clean.replace(",", "·").replace("/", "·")
                 if '(' not in sub_clean:
                     sub_clean = sub_clean.replace(",", "·").replace("/", "·")
 
