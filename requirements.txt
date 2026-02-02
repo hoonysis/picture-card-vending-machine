@@ -1,0 +1,8 @@
+Flask
+pandas
+openpyxl
+Pillow
+gspread
+oauth2client
+gunicorn
+werkzeug

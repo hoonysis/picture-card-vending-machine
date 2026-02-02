@@ -1,0 +1,131 @@
+/* === FIXED POSITION (Right Center) === */
+.fixed-tutorial-popup {
+    /* Layout */
+    position: fixed !important;
+    top: 50% !important;
+    right: 5% !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    inset: auto 5% auto auto !important;
+    z-index: 1000000000 !important;
+
+    /* Sizing */
+    width: 380px !important;
+    max-width: 90vw !important;
+    padding: 30px !important;
+    border-radius: 16px !important;
+
+    /* DARK MODE THEME */
+    background-color: #1a1a1a !important;
+    /* Almost Black */
+    border: 3px solid #FFD700 !important;
+    /* Gold Border */
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6) !important;
+    color: #fff !important;
+    font-family: 'Pretendard', sans-serif !important;
+}
+
+/* Hide Arrow */
+.fixed-tutorial-popup .driver-popover-arrow {
+    display: none !important;
+}
+
+/* Typography - High Contrast */
+.driver-popover-title {
+    font-size: 1.8rem !important;
+    /* Bigger Title */
+    font-weight: 900 !important;
+    color: #FFD700 !important;
+    /* Gold/Yellow Neon */
+    margin-bottom: 15px !important;
+    line-height: 1.2 !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.driver-popover-description {
+    font-size: 1.2rem !important;
+    line-height: 1.5 !important;
+    color: #eee !important;
+    /* Off-white */
+    font-weight: 500 !important;
+}
+
+/* Action Box - The "Command" Area */
+.tutorial-action {
+    display: block;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #333;
+    /* Dark Grey */
+    border-left: 5px solid #00E5FF;
+    /* Cyan Neon */
+    border-radius: 6px;
+
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #00E5FF !important;
+    /* Cyan Text */
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Keywords inside description */
+.driver-popover-description b {
+    color: #FF4081;
+    /* Neon Pink */
+    background: transparent;
+    font-weight: 900;
+    font-size: 1.1em;
+}
+
+/* Buttons */
+.custom-next-btn {
+    background: #00E5FF !important;
+    /* Cyan Button */
+    color: #000 !important;
+    /* Black Text for contrast */
+    font-weight: 900 !important;
+    box-shadow: 0 4px 15px rgba(0, 229, 255, 0.4) !important;
+    transition: transform 0.2s !important;
+}
+
+.custom-next-btn:hover {
+    transform: scale(1.05) !important;
+    background: #00B8D4 !important;
+}
+
+/* Footer spacing */
+.fixed-tutorial-popup .driver-popover-footer {
+    margin-top: 25px !important;
+}
+
+/* Close Button (X) */
+.tutorial-close-btn {
+    position: absolute !important;
+    top: 15px !important;
+    right: 15px !important;
+    width: 32px !important;
+    height: 32px !important;
+    border: none !important;
+    background: transparent !important;
+    color: #888 !important;
+    font-size: 24px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    transition: all 0.2s !important;
+    line-height: 1 !important;
+    z-index: 1000000005 !important;
+    /* Above everything inside popover */
+}
+
+.tutorial-close-btn:hover {
+    color: #ff5252 !important;
+    /* Red on hover */
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: rotate(90deg) !important;
+}

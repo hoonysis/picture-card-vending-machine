@@ -1,0 +1,293 @@
+/* ==========================================================================
+   [MIGRATED PRINT STYLES - FROM SANDBOX (2026-01-31)]
+   - Grid Standardization
+   - Portrait/Landscape Layouts
+   - Print Sidebar UI (ps- prefix)
+   ========================================================================== */
+
+/* --- Print Sidebar Styles (ps- prefix to avoid conflict) --- */
+.print-sidebar {
+    width: 300px;
+    background: #fdfdfd;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+    height: 100% !important;
+}
+
+.ps-sidebar-header {
+    padding: 20px;
+    background: #fff !important; /* Force White Background */
+    border-bottom: 1px solid #eee;
+}
+
+.ps-sidebar-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333 !important; /* Force Dark Text */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent !important; /* Override style.css */
+    border: none !important; /* Override style.css */
+    text-align: left !important; /* Override style.css */
+    padding: 0 !important; /* Reset padding */
+}
+
+.ps-sidebar-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.ps-section { margin-bottom: 25px; }
+
+.ps-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.ps-options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.ps-option-btn {
+    border: 1px solid #e0e0e0;
+    background: white;
+    padding: 12px 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.ps-option-btn:hover {
+    background: #f8f9fa;
+    border-color: #bdc3c7;
+}
+
+.ps-option-btn.selected {
+    border-color: #2196F3;
+    background: #E3F2FD;
+    color: #1565C0;
+    font-weight: bold;
+}
+
+.ps-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ps-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #444;
+    user-select: none;
+    padding: 5px 0;
+}
+
+.ps-checkbox-label input {
+    width: 18px;
+    height: 18px;
+    accent-color: #2196F3;
+}
+
+/* Print Button (Large) */
+.btn-print-large {
+    width: 100%;
+    padding: 15px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-print-large:hover { background: #1976D2; }
+
+/* Info Box */
+.info-box {
+    background: #FFF3E0;
+    border: 1px solid #FFE0B2;
+    color: #E65100;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-top: 15px;
+    line-height: 1.4;
+}
+
+/* --- Print Preview Area --- */
+.print-preview-area {
+    flex: 1;
+    width: 0;
+    flex-grow: 1;
+    background-color: #525659;
+    overflow-y: auto !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    gap: 30px;
+    height: 100% !important;
+}
+
+/* --- A4 Page Definitions --- */
+.a4-page {
+    width: 297mm !important;
+    height: 210mm !important;
+    min-width: 297mm !important;
+    min-height: 210mm !important;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    box-sizing: border-box;
+    padding: 10mm;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+/* Portrait Mode */
+.a4-page.page-portrait {
+    width: 210mm !important;
+    height: 297mm !important;
+    min-width: 210mm !important;
+    min-height: 297mm !important;
+}
+
+/* --- CSS Grid Layouts (Standardized) --- */
+.basket-grid-page {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    display: grid !important;
+}
+
+/* Common Card Styles Reset for Grid */
+.basket-grid-page .card.in-basket {
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    border: 1px solid #ccc;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    float: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+}
+
+.basket-grid-page .card-img {
+    object-fit: contain;
+    max-width: 90%;
+    max-height: 80%;
+}
+
+.basket-grid-page .card-name {
+    text-align: center;
+    width: 100%;
+    margin-top: 5px;
+    line-height: 1.2;
+    background: transparent !important;
+}
+
+/* Layouts */
+/* 2x1 Landscape */
+.basket-grid-page.layout-2x1 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-rows: 150mm !important;
+    gap: 5mm !important;
+}
+.basket-grid-page.layout-2x1 .card-name { font-size: 28px; }
+
+/* 3x2 Landscape (6 Cards) */
+.basket-grid-page.layout-3x2 {
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-auto-rows: 91mm !important; /* Adjusted */
+    gap: 7mm !important; /* Adjusted */
+}
+.basket-grid-page.layout-3x2 .card-name { font-size: 16px; }
+
+/* 4x2 Landscape (8 Cards) */
+.basket-grid-page.layout-4x2 {
+    grid-template-columns: repeat(4, 1fr) !important;
+    grid-auto-rows: 91mm !important; /* Adjusted */
+    gap: 6mm !important; /* Adjusted */
+}
+.basket-grid-page.layout-4x2 .card-name { font-size: 16px; }
+
+/* 5x3 Landscape (15 Cards) */
+.basket-grid-page.layout-5x3 {
+    grid-template-columns: repeat(5, 1fr) !important;
+    grid-auto-rows: 60mm !important;
+    gap: 4mm !important;
+}
+.basket-grid-page.layout-5x3 .card-name { font-size: 14px; }
+.basket-grid-page.layout-5x3 .card-img { max-height: 70%; }
+
+/* 7x4 Landscape (28 Cards) */
+.basket-grid-page.layout-7x4 {
+    grid-template-columns: repeat(7, 1fr) !important;
+    grid-auto-rows: 45mm !important;
+    gap: 3mm !important;
+}
+.basket-grid-page.layout-7x4 .card-name { font-size: 13px; }
+.basket-grid-page.layout-7x4 .card-img { max-height: 65%; }
+
+/* 10x5 Landscape (50 Cards) */
+.basket-grid-page.layout-10x5 {
+    grid-template-columns: repeat(10, 1fr) !important;
+    grid-auto-rows: 35mm !important;
+    gap: 3mm !important;
+}
+.basket-grid-page.layout-10x5 .card-name { font-size: 9px; }
+.basket-grid-page.layout-10x5 .card-img { max-height: 60%; }
+
+/* Portrait Layouts */
+.basket-grid-page.layout-1x2 {
+    grid-template-columns: 1fr !important;
+    grid-auto-rows: 130mm !important;
+    gap: 5mm !important;
+}
+.basket-grid-page.layout-1x2 .card-name { font-size: 32px; font-weight: bold; }
+.basket-grid-page.layout-1x2 .card-img { max-height: 85%; }
+
+.basket-grid-page.layout-2x2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-rows: 130mm !important;
+    gap: 5mm !important;
+}
+.basket-grid-page.layout-2x2 .card-name { font-size: 24px; font-weight: bold; }
+
+/* Options */
+body.hide-text .card-name { display: none !important; }
+body.hide-text .card-img { height: 95%; width: 95%; }
+body.hide-border .card.in-basket { border: 1px solid transparent !important; }
+
+/* End of Migrated Print Styles */

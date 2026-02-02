@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+.env
+
+# VSCode
+.vscode/
+
+# System
+Thumbs.db
+Desktop.ini
+.cursorrules
+
+# Logs & Databases
+*.log
+*.db
+*.sqlite3
+
+# Data Files (Content) - DO NOT UPLOAD
+user_images/
+user_audio/
+word.xlsx
+user_cards.json
+user_presets.json
+credentials.json
+captured_images/
+
+# Large Assets/Redundant Folders
+범주/
+예전/
+서버 백업/
+백업/
+backup/
+chat/
+_sandbox/
+_update/
+install_requirements.bat
+run_converter.bat
+run_server.bat
+0_통합런처.bat
+이미지를_여기로_드래그하세요.bat
+
+# Picture Data Folders (Explicitly Ignore)
+01_*/
+02_*/
+03_*/
+04_*/
+05_*/
+06_*/
+07_*/
+08_*/
+09_*/
+10_*/
+11_*/
+12_*/
+13_*/
+14_*/
+15_*/
+16_*/
+17_*/
+18_*/
+19_*/
+20_*/
+ㅇ(받침)/
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+*.msix

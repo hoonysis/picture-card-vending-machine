@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>그림카드 범주별 검수 갤러리</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; background: #f0f2f5; padding: 20px; }
+        .category-block { background: white; border-radius: 12px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .category-title { font-size: 1.5em; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #333; }
+        .gallery { display: flex; flex-wrap: wrap; gap: 15px; }
+        .card { 
+            width: 150px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: #fff; 
+            text-align: center; transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card img { width: 100%; height: 150px; object-fit: contain; background: #f9f9f9; }
+        .card-info { padding: 10px; font-size: 0.9em; }
+        .card-name { font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
+        .card-file { color: #7f8c8d; font-size: 0.8em; word-break: break-all; }
+        .warning { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>🧐 그림카드 범주별 검수 갤러리</h1>
+    <p>아래 목록을 스크롤하며 <strong>단어 이름과 그림이 다른 경우</strong>를 찾아주세요.</p>
+
+    <div id="container">Loading...</div>
+
+    <script src="data.js"></script>
+    <script>
+        // data.js provides 'soundData' array
+        
+        function renderGallery() {
+            const container = document.getElementById('container');
+            container.innerHTML = '';
+
+            // Group by Category (Main + Sub)
+            // Expected flattened structure logic: "POS-CAT"
+            const grouped = {};
+            
+            soundData.forEach(item => {
+                const pos = (item.part_of_speech || '').trim();
+                const cat = (item.language_category || '').trim();
+                
+                if(!pos || !cat) return; // Skip unknown
+
+                const posClean = pos.replace(/\//g, ',').replace(/·/g, ',');
+                const catClean = cat.replace(/\//g, ',').replace(/·/g, ',');
+                
+                const categoryKey = `${posClean}-${catClean}`;
+                
+                if (!grouped[categoryKey]) {
+                    grouped[categoryKey] = [];
+                }
+                grouped[categoryKey].push(item);
+            });
+
+            // Iterate and Render
+            // Sort categories alphabetically
+            const sortedKeys = Object.keys(grouped).sort();
+
+            sortedKeys.forEach(key => {
+                const items = grouped[key];
+                
+                // Sort items by name
+                items.sort((a, b) => a.name.localeCompare(b.name));
+
+                // Create Block
+                const block = document.createElement('div');
+                block.className = 'category-block';
+                
+                const title = document.createElement('div');
+                title.className = 'category-title';
+                title.textContent = `${key} (${items.length}개)`;
+                block.appendChild(title);
+
+                const gallery = document.createElement('div');
+                gallery.className = 'gallery';
+
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+
+                    // Image Path Construction
+                    // We can point to the NEW '범주' folders or the original ones.
+                    // To verify the MIGRATION, we should try to load from the '범주' folder.
+                    // Path: 범주/KEY/image_file
+                    
+                    const imgPath = `범주/${key}/${item.image}`;
+                    
+                    // Fallback to original folder if needed for display? 
+                    // No, let's test the migration path directly. 
+                    // If image breaks, migration failed for that file.
+
+                    card.innerHTML = `
+                        <img src="${encodeURI(imgPath)}" loading="lazy" onerror="this.src='${item.folder}/${item.image}'; this.parentElement.style.border='2px solid red';">
+                        <div class="card-info">
+                            <div class="card-name">${item.name}</div>
+                            <div class="card-file">${item.image}</div>
+                        </div>
+                    `;
+                    gallery.appendChild(card);
+                });
+
+                block.appendChild(gallery);
+                container.appendChild(block);
+            });
+        }
+
+        window.onload = renderGallery;
+    </script>
+</body>
+</html>

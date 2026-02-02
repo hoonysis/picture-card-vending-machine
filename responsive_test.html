@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>반응형 디자인 테스트 뷰어</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #333;
+            font-family: 'Malgun Gothic', sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            background: #222;
+            color: white;
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #444;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #555;
+        }
+
+        button.active {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .viewer-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            /* 위쪽 정렬 */
+            padding: 20px;
+            overflow: auto;
+            background: #555;
+            /* 배경색으로 프레임 구분 */
+        }
+
+        iframe {
+            background: white;
+            border: 10px solid #111;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: width 0.5s ease, height 0.5s ease;
+            display: block;
+        }
+
+        .size-label {
+            color: #aaa;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="toolbar">
+        <strong>화면 크기 선택:</strong>
+        <button onclick="resize(1920, 'FHD (큰 모니터)')">🖥️ 1920px (기본)</button>
+        <button onclick="resize(1366, '13인치 노트북')" class="active">💻 1366px (13인치)</button>
+        <button onclick="resize(1280, '12인치 노트북')">💻 1280px (12인치)</button>
+        <button onclick="resize(1280, '1280x1024 (구형 모니터)', 1024)">🖥️ 1280x1024 (5:4)</button>
+        <button onclick="resize(1180, '11인치 기기')">🖥️ 1180px (11인치)</button>
+        <button onclick="resize(1024, '태블릿 가로')">📱 1024px (태블릿)</button>
+        <span class="size-label" id="current-size">현재: 1366px</span>
+    </div>
+
+    <div class="viewer-container">
+        <!-- index.html을 직접 불러옵니다 -->
+        <iframe id="test-frame" src="https://hangruclass.com/vending-machine/" width="1366" height="800"></iframe>
+    </div>
+
+    <script>
+        function resize(width, label, customHeight) {
+            const frame = document.getElementById('test-frame');
+            const status = document.getElementById('current-size');
+
+            frame.style.width = width + 'px';
+
+            if (customHeight) {
+                frame.style.height = customHeight + 'px';
+            } else {
+                // 높이는 비율에 맞춰 적당히 조정 (16:9 느낌)
+                let h = (width * 0.5625);
+                if (h < 600) h = 600;
+                if (h > 900) h = 900;
+                frame.style.height = h + 'px';
+            }
+
+            status.innerText = `현재: ${width}px (${label})`;
+
+            // 버튼 활성화 스타일
+            document.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // 시작 시 1366 모드로 자동 설정
+        window.onload = function () {
+            resize(1366, '13인치 노트북');
+            // 두 번째 버튼(1366)을 활성화 상태로
+            document.querySelectorAll('button')[1].classList.add('active');
+        };
+    </script>
+</body>
+
+</html>

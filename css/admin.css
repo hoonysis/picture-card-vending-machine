@@ -1,0 +1,341 @@
+body {
+    font-family: 'Malgun Gothic', sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+
+
+/* Upload Section */
+.upload-area {
+    border: 3px dashed #ccc;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    background: #fafafa;
+    transition: 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+
+.upload-area:hover,
+.upload-area.dragover {
+    border-color: #2196F3;
+    background: #e3f2fd;
+}
+
+.form-group {
+    margin: 15px 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Fix for checkboxes */
+input[type="checkbox"] {
+    width: auto;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+}
+
+.btn-primary {
+    background: #2196F3;
+}
+
+.btn-danger {
+    background: #f44336;
+}
+
+.preview-img {
+    max-width: 200px;
+    max-height: 200px;
+    margin-top: 10px;
+    display: none;
+    border: 1px solid #ddd;
+}
+
+/* Dashboard Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 5px;
+
+    /* Scrollable Box Style */
+    max-height: 600px;
+    /* 고정 높이 */
+    overflow-y: auto;
+    /* 세로 스크롤 */
+    border: 1px solid #ccc;
+    /* 박스 테두리 */
+    padding: 10px;
+    border-radius: 5px;
+    background: #fafafa;
+}
+
+.card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 4px 2px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    transition: 0.2s;
+    cursor: pointer;
+    user-select: none;
+    /* 텍스트 선택 방지 */
+}
+
+.card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-color: #2196F3;
+}
+
+.card img {
+    width: 100%;
+    height: 120px;
+    object-fit: contain;
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.card-info {
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+.card-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    border-radius: 3px;
+}
+
+/* Selected Styling */
+.card.selected {
+    border-color: #2196F3;
+    background-color: #e3f2fd;
+    box-shadow: 0 0 0 2px #2196F3 inset;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+/* Context Menu */
+#custom-context-menu {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    width: 150px;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border: 1px solid #ddd;
+    overflow: hidden;
+}
+
+#custom-context-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#custom-context-menu li {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #333;
+    border-bottom: 1px solid #eee;
+}
+
+#custom-context-menu li:last-child {
+    border-bottom: none;
+}
+
+#custom-context-menu li:hover {
+    background-color: #f5f5f5;
+    color: #2196F3;
+}
+
+/* Rename Interceptor Modal */
+#rename-interceptor-modal .modal-content {
+    width: 400px;
+    text-align: center;
+}
+
+.interceptor-preview {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 15px auto;
+    display: block;
+}
+
+.interceptor-input-group {
+    margin: 20px 0;
+    text-align: left;
+}
+
+.card span {
+    font-size: 0.8rem;
+    color: #666;
+    word-break: break-all;
+    /* [Layout Fix] Wrap long filenames */
+    line-height: 1.2;
+    display: block;
+    /* Ensure it takes width */
+    margin-top: 4px;
+}
+
+.interceptor-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.interceptor-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: 2px solid #2196F3;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* Loading Overlay */
+#loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    backdrop-filter: blur(2px);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #2196F3;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Header Buttons */
+.header-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: 0.2s;
+    text-decoration: none;
+}
+
+.header-btn:hover {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+}
+
+/* Ref Drop Zone Hover */
+#ref-drop-zone:hover,
+#ref-drop-zone.dragover {
+    background-color: #e3f2fd !important;
+    border-color: #2196F3 !important;
+    color: #1976D2 !important;
+    transform: scale(1.02);
+}

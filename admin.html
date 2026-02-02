@@ -1,0 +1,368 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자판기 관리자 페이지</title>
+    <link rel="stylesheet" href="css/admin.css">
+
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div
+            style="display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 20px;">
+            <!-- Header Left Buttons -->
+            <div style="position: absolute; left: 0; display: flex; gap: 10px;">
+                <a href="/api/backup_code" class="header-btn" style="background: #673AB7;" title="소스코드 및 데이터 백업 다운로드">
+                    <span>📦 코드 백업</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/114C5f1aowSR6TVG4OtY-RwmvCgbu3k-Gz81GndxPKV8/edit"
+                    target="_blank" class="header-btn" style="background: #2E7D32;" title="구글 스프레드시트 열기">
+                    <span>📊 사전 보기</span>
+                </a>
+            </div>
+
+            <h1 style="margin: 0;">🎛️ 자판기 관리자 페이지 <span style="font-size:0.6em; color:#888;">v1.1</span></h1>
+
+
+            <!-- Reference File Drop Zone (Hidden by User Request) -->
+            <div id="ref-drop-zone" title="여기에 reference_words.xlsx 파일을 드래그하여 업데이트하세요" style="position: absolute; right: 0; display: none; align-items: center; gap: 5px; 
+                        border: 2px dashed #bbb; padding: 5px 15px; border-radius: 8px; 
+                        color: #666; cursor: pointer; font-size: 0.9rem; background: #fff; transition: all 0.2s;">
+                <span>📂 사전 업데이트</span>
+            </div>
+        </div>
+
+
+
+
+        <!-- Upload Section (Always Visible) -->
+        <!-- Upload Section (Revised Layout) -->
+        <div class="upload-container"
+            style="background: #f8f9fa; padding: 20px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 30px;">
+            <h2
+                style="margin-top:0; color:#444; font-size: 1.2rem; border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-bottom: 20px;">
+                📤 카드 등록</h2>
+
+            <!-- Row 1: Image | Name | Save -->
+            <div style="display:flex; gap: 20px; align-items: stretch; margin-bottom: 20px;">
+
+                <!-- 1. Image Drop Zone (Fixed Width) -->
+                <div class="upload-area" id="drop-zone" onclick="document.getElementById('file-input').click()"
+                    style="width: 220px; flex-shrink: 0; min-height: 160px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:white; border:2px dashed #ccc; border-radius:10px; cursor:pointer;">
+                    <p style="margin:0; font-weight:bold; color:#777; font-size:0.9rem;">이미지 클릭/드래그</p>
+                    <input type="file" id="file-input" style="display:none" accept="image/*" multiple
+                        onchange="if(window.handleFileSelect) handleFileSelect(this)">
+                    <img id="preview" class="preview-img" style="margin-top:10px; max-height:120px; max-width: 90%;">
+                </div>
+
+                <!-- 2. Final Name Input (Flex) -->
+                <div style="flex:1; display:flex; flex-direction:column; justify-content: center;">
+                    <div
+                        style="background:white; padding:15px; border-radius:10px; border:1px solid #ddd; height: 100%; box-sizing: border-box; display:flex; flex-direction:column; justify-content: center;">
+
+                        <!-- Smart Rename UI (Inline) -->
+                        <div id="smart-rename-container"
+                            style="display:none; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #ccc;">
+                            <div
+                                style="font-size: 0.9rem; color: #555; margin-bottom: 6px; display:flex; justify-content:space-between;">
+                                <span>📄 원본: <b id="sr-original" style="color:#333;">-</b></span>
+                                <span id="sr-count" style="color: #e65100; font-weight:bold; font-size:0.85rem;">(남은 작업:
+                                    0장)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-weight: bold; font-size: 0.9rem; color:#0d47a1;">📝 저장명:</span>
+                                <input type="text" id="sr-input"
+                                    style="flex: 1; padding: 6px 10px; font-size: 1rem; border: 2px solid #90caf9; border-radius: 4px; background-color: #e3f2fd;"
+                                    placeholder="자동 분석된 이름" oninput="window.isRenaming = true"
+                                    onkeydown="if(event.key === 'Enter') confirmInterceptorName()">
+                                <button class="btn btn-sm btn-primary" onclick="confirmInterceptorName()"
+                                    style="padding: 4px 10px;">확인</button>
+                            </div>
+                        </div>
+                        <label style="font-weight:bold; color:#333; margin-bottom:8px; display:block;">최종 등록될 이름 <span
+                                id="main-remain-badge"
+                                style="color:#e65100; font-weight:bold; font-size: 0.9em; margin-left: 5px;"></span></label>
+                        <input type="text" id="input-display-name" placeholder="예: 하마 [하마] (비워두면 자동 분석 이름 사용)"
+                            style="width:100%; padding:12px; font-size:1.1rem; border:1px solid #ddd; border-radius:5px; box-sizing: border-box;">
+                        <p style="margin:5px 0 0 0; font-size:0.8rem; color:#888;">* 자동 분석 후 수정이 필요하면 여기에 입력하세요.</p>
+                    </div>
+                </div>
+
+                <!-- 3. Save Button (Fixed Width) -->
+                <button class="btn btn-primary"
+                    style="width: 180px; flex-shrink: 0; font-size:1.1rem; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5px;"
+                    onclick="if(window.uploadCard) uploadCard()">
+                    <span style="font-size:1.5rem;">💾</span>
+                    <span>모두 저장하기 (F4)</span>
+                </button>
+            </div>
+
+            <!-- Row 2: Articulation | Language -->
+            <div style="display:flex; gap: 20px; align-items: stretch;">
+
+                <!-- Left: Articulation Analysis (Full Height) -->
+                <div style="flex: 1; min-width: 0;">
+                    <div
+                        style="background: #e8f5e9; padding:15px; border-radius:5px; border:1px solid #c8e6c9; height: 100%; box-sizing: border-box; display:flex; flex-direction:column;">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                            <h4 style="margin:0; color:#2e7d32; font-size:1rem;">🗣️ 조음 분석 (자동)</h4>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span
+                                    style="font-size:0.75rem; color:#e64a19; font-weight:bold; letter-spacing:-0.5px;">
+                                    ※ 표준발음을 변경하고 꼭 분석하기 버튼 클릭
+                                </span>
+                                <button class="btn btn-primary"
+                                    style="padding: 5px 12px; background: #43a047; border:none; font-size:0.85rem;"
+                                    title="단축키: F3"
+                                    onclick="if(window.analyzeName) analyzeName(document.getElementById('input-name').value)">🔍
+                                    분석하기 (F3)</button>
+                            </div>
+                        </div>
+
+                        <!-- Inputs -->
+                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                            <div style="flex:1;">
+                                <label style="color:#1b5e20; font-size:0.8rem;">단어 이름</label>
+                                <input type="text" id="input-name" placeholder="예: 책상"
+                                    style="width:100%; padding:8px; border:1px solid #a5d6a7; border-radius:4px; box-sizing: border-box;"
+                                    onkeydown="if(event.key==='Enter' && window.analyzeName) analyzeName()"
+                                    oninput="this.value = this.value.replace(/\s+/g, '')">
+                            </div>
+                            <div style="flex:1;">
+                                <label style="color:#1b5e20; font-size:0.8rem;">표준 발음</label>
+                                <input type="text" id="input-pronunciation" placeholder="예: 책쌍"
+                                    style="width:100%; padding:8px; border:1px solid #a5d6a7; border-radius:4px; box-sizing: border-box;"
+                                    onkeydown="if(event.key==='Enter' && window.analyzeName) analyzeName()">
+                            </div>
+                        </div>
+
+                        <!-- Content Area (Expandable) -->
+                        <div id="suggestion-area"
+                            style="flex:1; border: 1px solid #a5d6a7; padding: 10px; border-radius: 5px; background: #fff; overflow-y: auto; min-height: 300px;">
+                            <p style="color:#999; margin:0; text-align:center; padding-top: 50px;">
+                                단어 이름을 입력하고 분석을 눌러주세요.<br>
+                                (분석 결과가 여기에 표시됩니다)
+                            </p>
+                        </div>
+
+                        <button class="btn" id="manual-add-btn"
+                            style="width:100%; margin-top:10px; padding: 8px; background:#f1f8e9; color:#2e7d32; border: 1px dashed #2e7d32; font-weight:bold;"
+                            onclick="if(window.addManualRow) addManualRow()">+ 직접 추가하기</button>
+                    </div>
+                </div>
+
+                <!-- Right: Language Classification (Full Height) -->
+                <div style="flex: 1; min-width: 0;">
+                    <div
+                        style="background: #e3f2fd; padding:15px; border-radius:5px; border:1px solid #90caf9; height: 100%; box-sizing: border-box; display:flex; flex-direction:column;">
+                        <h4 style="margin:0 0 15px 0; color:#1565c0; font-size:1rem;">📝 언어 분류 선택</h4>
+
+                        <!-- Dynamic Checkbox Container -->
+                        <div id="language-checkbox-container"
+                            style="flex:1; overflow-y:auto; min-height: 300px; padding-right:5px;">
+                            <!-- Populated by JS -->
+                            <div style="text-align:center; padding:50px 20px; color:#999;">로딩중...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section (Always Visible) -->
+        <div id="dashboard">
+            <h2
+                style="margin-top:0; color:#444; font-size: 1.2rem; border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap: 10px; cursor: pointer;" onclick="toggleList()">
+                    <span>📋 목록 관리</span>
+                    <span id="list-toggle-icon" style="font-size: 0.9rem; color: #888;">▼ 펼치기</span>
+                </div>
+                <span id="list-stats" style="font-size: 0.9rem; color: #666; font-weight: normal;">
+                    조음 단어 : 0개 / 언어 단어 : 0개
+                </span>
+            </h2>
+            <div id="list-container" style="display:none;">
+                <div class="form-group" style="display:flex; gap:5px; margin-bottom: 20px; align-items: center;">
+                    <select id="filter-phoneme" onchange="renderGridWithLoading()"
+                        style="width: 120px; border: 2px solid #4CAF50; color: #2e7d32; font-weight: bold;">
+                        <option value="All">모든 음소</option>
+                        <!-- JS populates -->
+                    </select>
+                    <select id="filter-pos" onchange="renderGridWithLoading()"
+                        style="width: 120px; border: 2px solid #4CAF50; color: #2e7d32; font-weight: bold;">
+                        <option value="All">모든 위치</option>
+                        <option value="어두초성">어두초성</option>
+                        <option value="어중초성">어중초성</option>
+                        <option value="어중종성">어중종성</option>
+                        <option value="어말종성">어말종성</option>
+                    </select>
+                    <!-- New Filters -->
+                    <select id="filter-language-main" onchange="updateFilterLanguageSub(); renderGridWithLoading()"
+                        style="width: 130px; border: 2px solid #2196F3; color: #1565c0; font-weight: bold;">
+                        <option value="All">모든 언어대범주</option>
+                        <!-- JS populates -->
+                    </select>
+                    <select id="filter-language-sub" onchange="renderGridWithLoading()"
+                        style="width: 130px; border: 2px solid #2196F3; color: #1565c0; font-weight: bold;">
+                        <option value="All">모든 언어소범주</option>
+                        <!-- JS populates -->
+                    </select>
+
+                    <input type="text" id="search-input" placeholder="단어나 초성(ㄱ,ㅏ)으로 검색 가능"
+                        onkeyup="renderGridWithLoading()" style="flex:1; min-width: 100px;">
+
+                    <!-- Buttons (Compact, No Emojis) -->
+                    <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.9rem;"
+                        onclick="loadCards()">새로고침</button>
+                    <!-- [NEW] Open GSheet Button -->
+                    <a href="https://docs.google.com/spreadsheets/d/114C5f1aowSR6TVG4OtY-RwmvCgbu3k-Gz81GndxPKV8/edit"
+                        target="_blank" class="btn btn-success"
+                        style="padding: 8px 12px; font-size: 0.9rem; background-color: #28a745; text-decoration: none; color: white;">
+                        📂 시트 열기
+                    </a>
+                    <div style="width: 1px; background: #ccc; margin: 0 5px; height: 30px;"></div>
+
+                    <!-- Help Text -->
+                    <!-- Help Button -->
+                    <button class="btn btn-info" onclick="showHelpModal()"
+                        style="margin-right: auto; margin-left: 10px; padding: 6px 12px; font-size: 0.9rem; background-color: #17a2b8; border-color: #17a2b8; color: white;">
+                        ℹ️ 단축키 안내
+                    </button>
+
+                    <div style="width: 1px; background: #ccc; margin: 0 10px; height: 30px;"></div>
+
+                    <button class="btn btn-danger" style="background:#b71c1c; padding: 8px 12px; font-size: 0.9rem;"
+                        onclick="handleDeleteAll()">전체삭제</button>
+                </div>
+                <div class="grid" id="card-grid"></div>
+            </div> <!-- End list-container -->
+        </div>
+    </div>
+
+    <!-- Custom Context Menu -->
+    <div id="custom-context-menu">
+        <ul>
+            <li onclick="selectAllCards()">✅ 전체선택</li>
+            <li onclick="handleEditBtn()">✏️ 선택수정</li>
+            <li onclick="handleDeselect()">⬜ 선택해제</li>
+            <li onclick="handleDeleteSelected()" style="color:#d32f2f;">🗑️ 선택삭제</li>
+        </ul>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content" style="width: 600px; max-width: 95%;">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>카드 수정</h2>
+            <!-- Image Preview in Modal -->
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img id="edit-preview-img" style="max-height: 400px; max-width: 100%; border-radius: 4px;">
+            </div>
+            <input type="hidden" id="edit-original-folder">
+            <input type="hidden" id="edit-original-image">
+
+            <div class="form-group">
+                <label>이름</label>
+                <!-- Read-Only Display -->
+                <div id="edit-name-display"
+                    style="padding: 8px; background: #f5f5f5; border-radius: 4px; font-weight: bold; color: #333;">
+                </div>
+                <!-- Hidden inputs for JS compatibility -->
+                <input type="hidden" id="edit-name">
+            </div>
+            <div class="form-group">
+                <label>음소 정보</label>
+                <!-- Read-Only Display -->
+                <div id="edit-phoneme-display"
+                    style="padding: 8px; background: #f5f5f5; border-radius: 4px; color: #555;"></div>
+                <!-- Hidden inputs for JS compatibility -->
+                <input type="hidden" id="edit-phoneme">
+                <input type="hidden" id="edit-pos">
+            </div>
+
+            <div style="border-top:1px solid #eee; margin: 15px 0;"></div>
+
+            <div class="form-group">
+                <label>언어 범주</label>
+                <select id="edit-part-speech" onchange="updateEditCategoryOptions()">
+                    <option value="미분류">미분류</option>
+                    <option value="사람/신체">사람/신체</option>
+                    <option value="음식">음식</option>
+                    <option value="생활/사물">생활/사물</option>
+                    <option value="장소/환경">장소/환경</option>
+                    <option value="놀이/운동">놀이/운동</option>
+                    <option value="서술/개념">서술/개념</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>세부 카테고리</label>
+                <select id="edit-category"></select>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-primary" onclick="saveEdit()" style="flex:1">수정 저장</button>
+                <button class="btn btn-danger" onclick="deleteCard()" style="flex:1">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rename Interceptor Modal -->
+    <div id="rename-interceptor-modal" class="modal" style="z-index: 200;">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:#444;">✨ 파일명 스마트 정리 <span id="interceptor-count"
+                    style="font-size:0.8rem; color:#2196F3; display:none;"></span></h3>
+
+            <img id="interceptor-preview" class="interceptor-preview" src="">
+
+            <div class="interceptor-input-group">
+                <div class="interceptor-label">원본: <span id="interceptor-original" style="font-weight:normal;"></span>
+                </div>
+                <div style="text-align:center; font-size:1.2rem; margin:10px 0;">⬇️</div>
+                <label class="interceptor-label">저장될 이름 (수정 가능) <span id="interceptor-remain-badge"
+                        style="color:#e65100; font-weight:bold; font-size: 0.9em; margin-left: 5px;"></span></label>
+                <input type="text" id="interceptor-input" class="interceptor-input"
+                    onkeydown="if(event.key==='Enter') confirmInterceptorName()">
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <button class="btn" style="background:#ddd; width: 100px;" onclick="closeInterceptorModal()">취소</button>
+                <button class="btn btn-primary" style="width: 150px;" onclick="confirmInterceptorName()">✅ 확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/admin/admin_data.js"></script>
+    <script src="js/admin/admin_util.js"></script>
+    <script src="js/admin/admin_api.js"></script>
+    <script src="js/admin/admin_ui.js?v=20260201_1615"></script>
+    <script src="js/admin/admin_upload.js?v=20260201_1615"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("🚀 Admin Page Initializing...");
+
+            // 1. Init UI Helpers (Filters & Context Menu)
+            if (window.populateSelects) window.populateSelects();
+            if (window.renderLanguageCheckboxes) window.renderLanguageCheckboxes();
+            if (window.populateFilterLanguageMain) window.populateFilterLanguageMain();
+            if (window.initContextMenu) window.initContextMenu();
+
+            // 2. Init Upload Interceptor
+            if (window.initUpload) window.initUpload();
+
+            // 3. Load Data
+            if (window.loadCards) window.loadCards();
+        });
+    </script>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+</body>
+
+</html>

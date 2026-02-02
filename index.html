@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한그루 그림 자판기</title>
+    <link rel="icon" type="image/png" href="images/app_icon.png?v=3">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico?v=3">
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico?v=3">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css?v=11">
+    <!-- SANDBOX MIGRATION: Print Styles are injected via JS logic_print.js, no need to link here -->
+    <link rel="stylesheet" href="css/modal.css?v=2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" />
+    <link rel="stylesheet" href="css/tutorial.css?v=2">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+    <script>
+        // === Security: Block Keyboard Shortcuts ===
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'F12') { e.preventDefault(); return; }
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) { e.preventDefault(); return; }
+            if (e.ctrlKey && (e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')) { e.preventDefault(); return; }
+        });
+    </script>
+</head>
+
+<body>
+    <header class="two-row-header">
+        <div class="header-top-row">
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="setMode('language', this)">📚 언어 자판기</button>
+                <button class="tab-btn" onclick="setMode('articulation', this)">🗣️ 조음 자판기</button>
+            </div>
+
+            <!-- Relocated Guide Button (Outside Print Controls) -->
+            <!-- Right Side Controls Group -->
+            <div style="display: flex; align-items: center; gap: 15px;">
+
+                <!-- Grouped Guide Buttons -->
+                <div style="display: flex; align-items: center;">
+
+
+                    <!-- Guide Button -->
+                    <button id="tutorial-btn" class="guide-btn-image"
+                        style="height: 60px; border:none; background:none; padding:0;">
+                        <img src="images/guide_button_v3.png" alt="사용가이드" style="height: 100%; display:block;">
+                    </button>
+                </div>
+
+                <div class="print-controls"
+                    style="display:flex; flex-direction: row; align-items: center; gap: 10px; flex-wrap: wrap;">
+
+                    <!-- NEW: Simplified Controls (Settings moved to Popup) -->
+                    <div style="display: flex; gap: 5px;">
+                        <button class="print-main-btn" onclick="printSelected()" style="background:#333;"
+                            title="선택한 카드만 인쇄합니다">
+                            ✅ 선택 인쇄
+                        </button>
+                        <button class="print-main-btn" onclick="printAll()" title="담긴 카드 전체를 인쇄합니다">
+                            🖨️ 전체 인쇄
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="header-bottom-row">
+            <!-- Spacer for Grid Centering -->
+            <div></div>
+
+            <!-- Global Search Bar (Guide button removed from here) -->
+            <!-- Global Search Bar (Coupang Style) -->
+            <div class="global-search-container"
+                style="justify-self: center; width: 450px; max-width: 90vw; display: flex; justify-content: center;">
+                <input type="text" id="global-search-input" class="global-search-input" placeholder="단어나 초성으로 검색"
+                    oninput="handleGlobalSearch(this.value)">
+                <span class="search-icon">🔍</span>
+                <button class="search-clear-btn" onclick="clearGlobalSearch()" style="display:none;">×</button>
+            </div>
+
+            <!-- Spacer for Grid Centering (Right) - Restored for Balance -->
+            <div></div>
+        </div>
+
+
+        </div>
+
+
+        <div class="container">
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-title" id="sidebar-title">언어 범주 선택</div>
+                <div id="articulation-menu" class="hidden"></div>
+                <div id="language-menu"></div>
+            </aside>
+
+            <main class="main-content">
+                <div class="preset-section">
+                    <div class="preset-header">
+                        <div style="display:flex; align-items:center; gap: 10px;">
+                            <span class="preset-title">⭐ 저장소</span>
+                            <button class="add-preset-btn" onclick="addNewPreset('current')"
+                                title="현재 인쇄 대기 목록을 포함하여 저장소를 만듭니다.">
+                                📥 저장소 추가 : 현재 그림 포함
+                            </button>
+                            <button class="add-preset-btn" onclick="addNewPreset('empty')" title="빈 저장소를 새로 만듭니다.">
+                                📁 저장소 추가 : 빈 저장소
+                            </button>
+                            <input type="text" id="preset-search-input" placeholder="🔍 저장소 검색"
+                                class="preset-search-input" oninput="filterPresets(this.value)">
+                        </div>
+
+                        <div class="backup-group" style="margin-left: auto;">
+                            <button class="backup-btn" onclick="exportPresets()">📤 파일 저장</button>
+                            <button class="backup-btn" onclick="document.getElementById('file-input').click()">📥
+                                불러오기</button>
+                            <input type="file" id="file-input" style="display: none;" onchange="handleFileImport(this)">
+                        </div>
+                    </div>
+                    <div id="preset-list" class="preset-list-container"
+                        style="display:flex; flex-wrap:wrap; gap:5px; padding-top:10px;">
+                    </div>
+                </div>
+
+                <div class="basket-section">
+                    <div class="basket-header">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="basket-title">📥 인쇄 대기 목록</span>
+                            <button id="usage-tip-btn" onclick="openInputGuideModal()">💡 사용 팁</button>
+                        </div>
+                        <div class="undo-redo-controls">
+                            <button id="undo-btn" class="undo-redo-btn" onclick="undo()" title="실행 취소 (Ctrl+Z)"
+                                disabled>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 14L4 9l5-5" />
+                                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+                                </svg>
+                            </button>
+                            <button id="redo-btn" class="undo-redo-btn" onclick="redo()" title="다시 실행 (Ctrl+Y)"
+                                disabled>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M15 14l5-5-5-5" />
+                                    <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="basket-grid">
+                        <div class="empty-msg">카드를 클릭하면 여기에 담깁니다.</div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-left-group" style="display:flex; gap:10px; align-items:center;">
+                        <button id="add-all-btn" class="add-all-btn" onclick="addAllVisible()">⬇️ 모두 담기</button>
+                        <div class="filter-divider"></div>
+                        <div class="position-tabs">
+                            <button class="pos-btn active" onclick="filterPos('All', this)">전체</button>
+                            <button class="pos-btn" onclick="filterPos('어두초성', this)">어두초성</button>
+                            <button class="pos-btn" onclick="filterPos('어중초성', this)">어중초성</button>
+                            <button class="pos-btn" onclick="filterPos('어말종성', this)">어말종성</button>
+                        </div>
+                    </div>
+                    <div style="flex-grow: 1;"></div>
+                </div>
+
+
+                <div class="inventory-grid" id="inventory"></div>
+            </main>
+        </div>
+
+        <div id="custom-context-menu"></div>
+
+        <div id="image-modal" onclick="closeImageModal()">
+            <span class="close-modal">&times;</span>
+            <img id="modal-img" src="" onclick="event.stopPropagation()">
+            <div class="modal-caption" id="modal-caption" onclick="event.stopPropagation()"></div>
+        </div>
+
+        <div id="custom-modal-overlay" class="modal-overlay" style="display: none;">
+            <div class="custom-modal">
+                <div class="modal-header">
+                    <span class="modal-title">알림</span>
+                    <button class="modal-close-btn" onclick="closeCustomModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-message"></div>
+                    <input type="text" id="modal-input"
+                        style="display:none; width:100%; margin-top:15px; padding:10px; border:1px solid #ddd; border-radius:8px; font-size:1rem;"
+                        onkeydown="if(event.key === 'Enter') document.getElementById('modal-confirm-btn').click()">
+
+                    <!-- Preset Options (Hidden by default) -->
+
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-cancel-btn" class="modal-btn cancel">취소</button>
+                    <button id="modal-confirm-btn" class="modal-btn confirm">확인</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="upload-modal-overlay" class="modal-overlay" style="display: none;">
+            <div class="custom-modal" style="width: 500px; max-width: 95%;">
+                <div class="modal-header">
+                    <span class="modal-title">🖼️ 나만의 그림 업로드</span>
+                    <button class="modal-close-btn" onclick="closeUploadModal()">×</button>
+                </div>
+                <div class="modal-body" style="padding: 10px;">
+                    <div class="privacy-notice-box">
+                        <span class="privacy-icon">🔒</span>
+                        <div>
+                            업로드한 사진은 나만 확인할 수 있어요.<br>
+                            안심하고 업로드해 주세요.
+                        </div>
+                    </div>
+                    <div id="upload-step-1"
+                        style="border: 2px dashed #ccc; padding: 40px; text-align: center; cursor: pointer; border-radius: 10px;"
+                        onclick="document.getElementById('upload-file-input').click()"
+                        ondragover="handleDragOver(event)" ondrop="handleDrop(event)">
+                        <span style="font-size: 3rem;">📂</span><br><br>
+                        <div style="font-size: 1.3rem; color: #444; font-weight: bold; line-height: 1.6;">
+                            클릭하여 사진을 선택하거나<br>
+                            사진을 여기로 끌어오세요.
+                        </div>
+                        <input type="file" id="upload-file-input" style="display: none;" accept="image/*"
+                            onchange="handleFileSelect(this)">
+                    </div>
+
+                    <div id="upload-step-2" style="display: none; flex-direction: column; align-items: center;">
+                        <div style="margin-bottom: 10px; font-size: 0.85rem; color: #666; text-align: center;">
+                            ℹ️ 이미지 파일만 업로드 가능 (최대 5MB)
+                        </div>
+                        <!-- Custom Style for Cropper Handles -->
+                        <style>
+                            .cropper-point {
+                                width: 12px !important;
+                                height: 12px !important;
+                                opacity: 0.8 !important;
+                                background-color: #ff9800 !important;
+                                /* Orange handles for visibility */
+                            }
+
+                            .cropper-line {
+                                background-color: transparent !important;
+                            }
+                        </style>
+
+                        <div style="width: 300px; height: 300px; border: 1px solid #ddd; background: #eee; display:flex; justify-content:center; align-items:center;"
+                            id="crop-container">
+                            <img id="crop-image" style="max-width: 100%; display: block;">
+                        </div>
+
+                        <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+                            <label>이름: <input type="text" id="upload-name-input" placeholder="예: 철수"
+                                    style="padding: 5px;"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn cancel" onclick="closeUploadModal()">취소</button>
+                    <button id="upload-confirm-btn" class="modal-btn confirm" style="display: none;"
+                        onclick="processUpload()">저장하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- === Input Guide Modal === -->
+        <div id="input-guide-modal" class="modal-overlay" style="display: none;">
+            <div class="custom-modal" style="width: 900px; max-width: 95%;">
+                <div class="modal-header">
+                    <div class="modal-title">🖱️⌨️ 빠르고 편리한 사용 방법</div>
+                    <button class="modal-close-btn" onclick="closeInputGuideModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="guide-grid">
+                        <!-- Column 1: Left Click -->
+                        <div class="guide-col">
+                            <div class="guide-icon">🖱️</div>
+                            <h3>왼쪽 클릭 (기본)</h3>
+                            <ul>
+                                <li><b>클릭</b> : 카드 선택 / 해제</li>
+                                <li><b>드래그</b> : 카드 위치 이동</li>
+                                <li><b>Shift + 클릭</b> : 여러 개 연속 선택</li>
+                                <li><b>빈 공간 드래그</b> : 여러 개 한꺼번에 선택</li>
+                            </ul>
+                        </div>
+
+                        <!-- Column 2: Right Click -->
+                        <div class="guide-col">
+                            <div class="guide-icon">🖱️</div>
+                            <h3>오른쪽 클릭 (메뉴)</h3>
+                            <ul>
+                                <li><b>전체 선택</b> : 모든 카드 선택</li>
+                                <li><b>선택 해제</b> : 선택 모두 취소</li>
+                                <li><b>캡처 복사</b> : 그림을 이미지로 복사 (Canva 등 붙여넣기용)</li>
+                                <li><b>선택 복사</b> : 카드 복사하기</li>
+                                <li><b>선택 삭제</b> : 카드 지우기</li>
+                                <li><b>전체 삭제</b> : 목록 비우기</li>
+                            </ul>
+                        </div>
+
+                        <!-- Column 3: Keyboard -->
+                        <div class="guide-col">
+                            <div class="guide-icon">⌨️</div>
+                            <h3>키보드 단축키</h3>
+                            <ul>
+                                <li><b>Ctrl + A</b> : 전체 선택</li>
+                                <li><b>Ctrl + C</b> : 선택 복사</li>
+                                <li><b>Ctrl + V</b> : 붙여넣기</li>
+                                <li><b>Delete</b> : 선택 삭제</li>
+                                <li><b>Esc</b> : 선택 해제</li>
+                                <li><b>Ctrl + Z</b> : 실행 취소</li>
+                                <li><b>Ctrl + Y</b> : 다시 실행</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="data.js?v=3"></script>
+        <script src="js/logic_core.js?v=6"></script>
+        <script src="js/logic_basket.js?v=6"></script>
+        <script src="js/logic_print.js?v=7"></script>
+        <script src="js/logic_preset.js?v=7"></script>
+        <script src="js/logic_ui.js?v=6"></script>
+        <script src="js/logic_upload.js?v=6"></script>
+        <script src="js/logic_modal.js?v=6"></script>
+        <script src="js/logic_tutorial.js?v=10"></script>
+        <!-- [Smart Gate] Persistent Login & Access Control -->
+        <script src="js/temp_gate.js?v=2"></script>
+
+        <script>
+            init();
+            if (typeof initUpload === 'function') initUpload();
+
+        </script>
+
+</body>
+
+</html>

@@ -1,0 +1,2526 @@
+        /* === 1. 기본 스타일 === */
+        body {
+            font-family: 'Jua', 'Malgun Gothic', sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            /* Body scroll enabled */
+        }
+
+        /* === 2. 레이아웃 (헤더 + 사이드바 + 메인) === */
+        header {
+            background: white;
+            /* padding: 8px 20px; removed for 2-row */
+            padding: 0;
+            /* 원복 */
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            /* Changed to column */
+            /* justify-content: space-between; removed */
+            align-items: stretch;
+            /* Stretch to fill width */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+            flex-shrink: 0;
+            /* Sticky Header */
+            position: sticky;
+            top: 0;
+            /* min-height: 50px; removed */
+            box-sizing: border-box;
+        }
+
+        .header-top-row {
+            padding: 8px 10px;
+            /* Reduced side padding */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            /* Allow wrapping for standard screens */
+            gap: 10px;
+            /* Gap between wrapped items */
+            min-height: 50px;
+            box-sizing: border-box;
+        }
+
+        .header-bottom-row {
+            padding: 5px 20px;
+            background: white;
+            /* Clean white background */
+            /* border-top removed */
+            display: grid;
+            /* Switch to Grid for precise centering */
+            grid-template-columns: 1fr auto 1fr;
+            /* 3-column layout */
+            align-items: center;
+            position: relative;
+            gap: 20px;
+            min-height: 50px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            /* 원복 */
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            /* overflow: hidden; removed for unified scroll */
+            min-height: 0;
+            /* Flexbox scrolling fix */
+        }
+
+        /* [좌측 사이드바] - 음소 선택 */
+        .sidebar {
+            width: 240px;
+            /* 원복 */
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+
+            /* Fixed Sidebar */
+            position: fixed;
+            top: 120px;
+            /* Safely adjusted for 2-row header (wrapped top row + bottom row ~110-120px) */
+            /* 원복 */
+            left: 0;
+            bottom: 0;
+            height: calc(100vh - 120px);
+            /* 원복 */
+            overflow-y: auto;
+            z-index: 5;
+        }
+
+        .sidebar-title {
+            padding: 20px;
+            /* 원복 */
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: #1a252f;
+            text-align: center;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .phoneme-btn {
+            padding: 8px 10px;
+            /* 원복 */
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: #bdc3c7;
+            text-align: center;
+            font-size: 1.1rem;
+            /* 원복 */
+            font-weight: bold;
+            transition: 0.2s;
+            border-bottom: 1px solid #34495e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .phoneme-btn:hover {
+            background: #34495e;
+            color: white;
+        }
+
+        .phoneme-btn.active {
+            background: #4CAF50;
+            color: white;
+            box-shadow: inset 5px 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* [나만의 그림 버튼 스타일] */
+        .phoneme-btn.my-cards-btn {
+            color: #FFD54F;
+            /* Soft Gold */
+            font-weight: bold;
+            border-bottom: 1px solid #34495e;
+            /* Match sidebar separator */
+        }
+
+        .phoneme-btn.my-cards-btn:hover {
+            background: rgba(255, 213, 79, 0.1);
+        }
+
+        .phoneme-btn.my-cards-btn.active {
+            background: #FFD54F;
+            color: #3e2723;
+            /* Dark Brown for contrast */
+            box-shadow: inset 5px 0 0 #FF6F00;
+            /* Darker Orange Shadow */
+        }
+
+        /* [메인 영역] */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            /* Sidebar width + Extra space */
+            margin-left: 240px !important;
+            /* Forced layout fix */
+            min-height: 0;
+            gap: 20px;
+        }
+
+        /* Copyright Banner Style (Moved below header) */
+        .copyright-banner {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #d32f2f;
+            line-height: 1.3;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+
+
+        .copyright-banner span {
+            display: block;
+        }
+
+        /* 프리셋 섹션 */
+        .preset-section {
+            background-color: #fff3e0;
+            border: 2px solid #ffb74d;
+            border-radius: 15px;
+            padding: 15px;
+            /* 원복 */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            /* 원복 */
+            flex-shrink: 0;
+        }
+
+        .preset-header {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            /* 원복 */
+        }
+
+        .preset-title {
+            font-size: 1.1rem;
+            /* 원복 */
+            font-weight: bold;
+            color: #e65100;
+        }
+
+        .backup-group {
+            display: flex;
+            gap: 5px;
+            /* 원복 */
+        }
+
+        .backup-btn {
+            font-size: 0.8rem;
+            /* 원복 */
+            padding: 5px 10px;
+            /* 원복 */
+            border-radius: 15px;
+            border: 1px solid #aaa;
+            cursor: pointer;
+            background: white;
+            color: #555;
+        }
+
+        .preset-search-box {
+            margin-top: 10px;
+            /* 원복 */
+            margin-bottom: 5px;
+            /* 원복 */
+        }
+
+        .preset-search-box input {
+            width: 100%;
+            padding: 8px;
+            /* 원복 */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            /* 원복 */
+            box-sizing: border-box;
+            /* 패딩 포함 */
+        }
+
+        .preset-input-group {
+            display: flex;
+            gap: 5px;
+            /* 원복 */
+        }
+
+        #preset-name-input {
+            padding: 5px 10px;
+            /* 원복 */
+            border: 1px solid #ffb74d;
+            border-radius: 15px;
+            outline: none;
+        }
+
+        /* Unified Preset Button Style (Light Orange - User Request) */
+        .add-preset-btn {
+            background-color: #FFE0B2;
+            /* Darkened from #FFF3E0 */
+            color: #E65100;
+            border: 1px solid #FF9800;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .add-preset-btn:hover {
+            background-color: #FFCC80;
+            /* Darkened hover */
+            transform: translateY(-1px);
+        }
+
+        .save-preset-btn {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .preset-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Preset Tag Styles (renamed/unified from preset-item) */
+        .preset-tag {
+            background: white;
+            border: 1px solid #ffb74d;
+            padding: 6px 15px;
+            /* Slightly larger for better clickability */
+            border-radius: 20px;
+            /* More rounded */
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            color: #555;
+        }
+
+        .preset-tag:hover {
+            border-color: #E65100;
+            color: #E65100;
+        }
+
+        /* Active State: Dark Orange (Strong Emphasis) */
+        .preset-tag.active {
+            background: #FF9800 !important;
+            color: white !important;
+            border-color: #F57C00 !important;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(230, 81, 0, 0.3);
+        }
+
+        /* Context Menu Button (Three Dots) */
+        .preset-menu-btn {
+            font-size: 1.1rem;
+            color: inherit;
+            /* Inherit from tag color */
+            opacity: 0.6;
+            cursor: pointer;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .preset-menu-btn:hover {
+            opacity: 1;
+            background-color: rgba(0, 0, 0, 0.05);
+            /* Subtle active bg */
+        }
+
+        .preset-tag.active .preset-menu-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Dropdown Menu */
+        .preset-dropdown {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 5px 0;
+            z-index: 1000;
+            min-width: 100px;
+            display: none;
+            /* Hidden by default */
+        }
+
+        .preset-dropdown.show {
+            display: block;
+            animation: fadeIn 0.1s ease-out;
+        }
+
+        .dropdown-item {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.1s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .dropdown-item.delete {
+            color: #d32f2f;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .basket-section {
+            background-color: #fff;
+            border: 3px dashed #4CAF50;
+            border-radius: 15px;
+            padding: 20px;
+            /* Increased for marquee start area */
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            scroll-margin-top: 150px;
+            position: relative;
+            /* Context for absolute positioning if needed */
+        }
+
+        .basket-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1rem;
+            color: #2e7d32;
+            font-weight: bold;
+            margin-bottom: 10px;
+            user-select: none;
+            /* Prevent header selection */
+        }
+
+        .clear-all-btn {
+            background: #ff5252;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s;
+        }
+
+        .clear-all-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .basket-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        #basket-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            /* Increased gap for easier marquee selection */
+            padding: 10px;
+            /* Internal padding */
+            padding-bottom: 20px;
+            flex: 1;
+            align-content: flex-start;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .empty-msg {
+            width: 100%;
+            text-align: center;
+            color: #aaa;
+            margin-top: 20px;
+            /* 원복 */
+            font-size: 1rem;
+        }
+
+        /* 인쇄 옵션 */
+        .print-controls {
+            display: flex;
+            gap: 10px;
+            /* 원복 */
+            align-items: center;
+            background: #f1f3f5;
+            padding: 10px;
+            /* 원복 */
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+
+        .print-btn {
+            border: 1px solid #555;
+            background: white;
+            padding: 5px 15px;
+            /* 원복 */
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .print-btn.active {
+            background: #333;
+            color: white;
+        }
+
+        .print-main-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            /* 원복 */
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            /* 원복 */
+        }
+
+        /* 필터 및 검색 */
+        /* 필터 및 검색 (수정됨: 항상 2줄 배치) */
+        .filter-section {
+            display: flex;
+            flex-direction: column;
+            /* 가로(Row) 대신 세로(Column)로 쌓기 */
+            align-items: flex-start;
+            /* 왼쪽 정렬 */
+            justify-content: center;
+            margin-bottom: 15px;
+            /* 아래 간격 좀 더 확보 */
+            gap: 10px;
+            /* 위아래 줄 간격 */
+            width: 100%;
+            /* 전체 너비 사용 */
+        }
+
+        /* 검색창 그룹 (input + button) 스타일도 조금 다듬기 */
+        .filter-section>div:last-child {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            /* 검색창 라인도 꽉 차게 */
+        }
+
+        /* 검색창 길이 살짝 늘리기 (선택 사항) */
+        .search-box {
+            width: 300px;
+            /* 기존보다 조금 더 길게 */
+            max-width: 100%;
+        }
+
+        .position-tabs,
+        .syllable-tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .pos-btn {
+            padding: 8px 15px;
+            /* 원복 */
+            border-radius: 20px;
+            border: 2px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .pos-btn.active {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        /* Enforce Green Active State for ALL Phoneme Buttons (including Global) */
+        .phoneme-btn.active {
+            background: #4CAF50 !important;
+            color: white;
+            font-weight: bold;
+            border-color: #4CAF50;
+        }
+
+        /* --- Syllable Buttons (Blue Active) --- */
+        .syllable-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .syllable-btn.active {
+            background: #2196F3 !important;
+            /* Blue */
+            color: white;
+            border-color: #2196F3;
+        }
+
+        /* Global All Button: No special inactive style (Standard look) */
+        .phoneme-btn.global-all {
+            /* Inherits standard .phoneme-btn styles */
+            /* Only active state differs if needed, but here we unify it */
+        }
+
+        .search-box {
+            padding: 8px 15px;
+            /* 원복 */
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            min-width: 150px;
+            width: 200px;
+            /* 원복 */
+            font-size: 0.9rem;
+        }
+
+        .add-all-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            /* 원복 */
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* 카드 목록 Grid */
+        .inventory-grid {
+            display: grid;
+            /* 카드의 최소 크기를 화면 너비의 9% 정도로 설정 (약 130px~170px) */
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            /* 원복 */
+            gap: 15px;
+            /* 원복 */
+            padding-bottom: 20px;
+            scroll-margin-top: 150px;
+            /* Ensure 3rd step of tutorial scrolls correctly with header space */
+            min-height: 300px;
+            /* Ensure tour highlight looks good even if empty */
+        }
+
+        /* 공통 카드 스타일 */
+        .card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 5px;
+            aspect-ratio: 1/1.1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+            user-select: none;
+        }
+
+        /* Marquee visual */
+        .selection-marquee {
+            position: fixed;
+            /* Fixed to handle scrolling/relative positioning correctly */
+            border: 1px solid #0078d7;
+            background-color: rgba(0, 120, 215, 0.3);
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        /* Prevent text selection during drag */
+        .no-select {
+            user-select: none;
+        }
+
+
+        .card:hover {
+            border-color: #4CAF50;
+            transform: translateY(-3px);
+            z-index: 100;
+            /* Ensure tooltip is above other cards */
+        }
+
+        .card-img {
+            width: 90%;
+            height: 75%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        .card-name {
+            width: 100%;
+            font-size: 1rem;
+            /* 원복 */
+            font-weight: bold;
+            color: #333;
+            background: #f8f9fa;
+            padding: 4px 0;
+            /* 원복 */
+            border-radius: 5px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 장바구니 카드 스타일 */
+        .card.in-basket {
+            width: 80px;
+            /* 원복 */
+            aspect-ratio: 1/1.1;
+            cursor: grab;
+            border: 2px solid #4CAF50;
+            font-size: 0.8rem;
+            /* 원복 */
+        }
+
+        .card.in-basket:active {
+            cursor: grabbing;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: -8px;
+            /* 원복 */
+            right: -8px;
+            /* 원복 */
+            background: #ff5252;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            /* 원복 */
+            height: 22px;
+            /* 원복 */
+            text-align: center;
+            line-height: 22px;
+            /* 원복 */
+            display: block;
+            /* 원복 */
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            /* 원복 */
+        }
+
+        .card.in-basket:hover .remove-btn {
+            display: block;
+        }
+
+
+        /* 선택된 카드 스타일 */
+        .card.in-basket.selected {
+            border: 2px solid #2196F3 !important;
+            /* Blue selection */
+            background-color: #e3f2fd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+        }
+
+        /* 드래그 앤 드롭 시각적 피드백 (Placeholder) */
+        .basket-placeholder {
+            width: 80px;
+            /* Match .card.in-basket width */
+            aspect-ratio: 1/1.1;
+            background-color: #E8F5E9;
+            /* Light Green */
+            border: 2px dashed #4CAF50;
+            /* Green Border */
+            border-radius: 10px;
+            flex-shrink: 0;
+            margin: 0;
+            /* Flex gap handles spacing */
+            pointer-events: none;
+            /* Mouse events pass through to container */
+        }
+
+        /* === Usage Tip Button === */
+        #usage-tip-btn {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 4px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #666;
+            margin-left: 5px;
+            transition: all 0.2s;
+        }
+
+        #usage-tip-btn:hover {
+            background: #f1f3f5;
+            color: #333;
+            border-color: #bbb;
+        }
+
+        /* === Guide Modal Grid (3 Columns) === */
+        .guide-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .guide-col {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .guide-col h3 {
+            margin: 10px 0 15px;
+            color: #333;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .guide-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .guide-col ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+
+        .guide-col li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .guide-col li:last-child {
+            border-bottom: none;
+        }
+
+        .guide-col b {
+            color: #2c3e50;
+        }
+
+        /* 드래그 선택 박스 제거됨 */
+
+        /* 글자 숨기기 모드 (장바구니 - 화면에서는 항상 보임, 인쇄 시에만 숨김) */
+        @media print {
+
+            body.hide-text .basket-section .card-name,
+            body.hide-text .card.in-basket .card-name {
+                display: none !important;
+            }
+
+            body.hide-text .basket-section .card-img,
+            body.hide-text .card.in-basket .card-img {
+                height: 95%;
+                width: 95%;
+            }
+        }
+
+        /* === Tooltip Style (Smart Hover) === */
+        .card.has-tooltip {
+            position: relative;
+            /* Ensure relative context */
+        }
+
+        .card.has-tooltip:hover::after {
+            content: attr(data-tooltip-text);
+            position: absolute;
+            top: 100%;
+            /* Below the card */
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            z-index: 999;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            pointer-events: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            margin-top: 8px;
+            /* Spacing from card */
+            font-family: 'Malgun Gothic', sans-serif;
+            font-weight: normal;
+        }
+
+        /* === Security: Disable Image Dragging === */
+        img {
+            -webkit-user-drag: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        /* Tooltip Arrow */
+        .card.has-tooltip:hover::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-bottom-color: rgba(0, 0, 0, 0.85);
+            /* Upside down arrow? No, pointing up to card */
+            border-bottom: 0;
+            border-top-color: rgba(0, 0, 0, 0.85);
+            margin-top: 2px;
+            z-index: 999;
+        }
+
+        /* === Custom Context Menu === */
+        #custom-context-menu {
+            display: none;
+            position: absolute;
+            z-index: 10000;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            padding: 5px 0;
+            min-width: 150px;
+        }
+
+        .ctx-menu-item {
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #333;
+            display: block;
+        }
+
+        .ctx-menu-item:hover {
+            background-color: #f1f3f5;
+        }
+
+        .ctx-divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 4px 0;
+        }
+
+        /* === Image Modal (Zoom) === */
+        #image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 11000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #image-modal img {
+            max-width: 90%;
+            max-height: 85%;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            background: white;
+            object-fit: contain;
+        }
+
+        #image-modal .modal-caption {
+            color: white;
+            margin-top: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        #image-modal .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 3rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* --- Custom Modal Styling --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20000;
+            /* Higher than everything */
+            backdrop-filter: blur(2px);
+        }
+
+        .custom-modal {
+            background: white;
+            width: 400px;
+            max-width: 90%;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: modalPop 0.2s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: #FF9800;
+            /* Orange theme */
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 25px 20px;
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.5;
+            text-align: center;
+            /* Generally center aligned looks good for alerts */
+        }
+
+        .modal-footer {
+            padding: 10px 20px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .modal-btn.confirm {
+            background: #FF9800;
+            color: white;
+        }
+
+        .modal-btn.confirm:hover {
+            background: #e68900;
+        }
+
+        .modal-btn.cancel {
+            background: #f1f1f1;
+            color: #555;
+        }
+
+        .modal-btn.cancel:hover {
+            background: #e0e0e0;
+        }
+
+        /* === 3. 인쇄 전용 스타일 (가로 모드) === */
+        @media print {
+            @page {
+                /* size gets injected by JS */
+                margin: 10mm;
+            }
+
+            html,
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100%;
+                height: auto !important;
+                /* 높이 제한 해제 */
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                background: transparent !important;
+                overflow: visible !important;
+                /* 스크롤바 hidden 해제 */
+            }
+
+            /* ... (existing common print reset styles) ... */
+
+            /* 테두리 숨김 옵션 */
+            body.hide-border .card.in-basket,
+            body.hide-border .print-card {
+                border: none !important;
+            }
+
+
+
+            /* ... (existing styles continue below) ... */
+
+            body {
+                display: block !important;
+                /* Flex 해제 */
+                padding: 0 !important;
+                /* 고정 mm 대신 비율(%) 사용: 종이 크기에 맞춰 꽉 차게(약간의 여유 4%) */
+                width: 96%;
+                margin: 0 auto !important;
+                /* 가운데 정렬 */
+                max-width: 100%;
+                background-color: white !important;
+                border: none !important;
+                box-shadow: none !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            html {
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            /* 숨길 것들 (모달, 오버레이 포함) */
+            header,
+            .sidebar,
+            .preset-section,
+            .filter-section,
+            .inventory-grid,
+            .print-controls,
+            .empty-msg,
+            .basket-header,
+            .copyright-banner,
+            #custom-context-menu,
+            #image-modal,
+            .modal-overlay,
+            #custom-modal-overlay,
+            #upload-modal-overlay,
+            #input-guide-modal,
+            #tutorial-btn {
+                display: none !important;
+            }
+
+            /* [Print Fix] Hide UI elements */
+            .card-menu-btn {
+                display: none !important;
+            }
+
+            /* Remove shadows/borders for cleaner print */
+            /* 빈 이미지나 깨진 이미지 숨김 */
+            img[src=""],
+            img:not([src]) {
+                display: none !important;
+            }
+
+            .container {
+                display: block;
+                width: 100%;
+                margin: 0 !important;
+                padding: 0 !important;
+                left: 0 !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            .main-content {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                margin-left: 0 !important;
+                left: 0 !important;
+                overflow: visible;
+                display: block;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            .basket-section {
+                padding: 0;
+                margin: 0;
+                display: block;
+                min-height: auto;
+                width: 100%;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            #basket-grid {
+                display: grid !important;
+                width: 100%;
+                /* 부모(96%)를 꽉 채움 */
+                margin: 0 auto;
+                overflow: visible;
+                padding: 0;
+                justify-content: center;
+                align-content: start;
+                background: transparent !important;
+                border: none !important;
+                /* 간격을 비율로 설정하면 더 유연함 */
+                gap: 1%;
+            }
+
+            .card.in-basket {
+                border: 1px solid #ccc;
+                break-inside: avoid;
+                page-break-inside: avoid;
+                box-shadow: none;
+                width: 100%;
+                height: 100%;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background: white !important;
+                /* 넘침 방지 */
+                overflow: hidden;
+            }
+
+            .card-img {
+                object-fit: contain;
+                /* 이미지가 카드 밖으로 나가지 않도록 확실하게 제한 */
+                max-width: 90%;
+                max-height: 80%;
+                background: transparent !important;
+            }
+
+            .remove-btn {
+                display: none !important;
+            }
+
+            /* 인쇄 시 툴팁 숨김 (안전장치) */
+            .card.has-tooltip::after,
+            .card.has-tooltip::before {
+                display: none !important;
+            }
+
+            /* 선택 인쇄 모드 */
+            body.print-selected-only .card.in-basket:not(.selected) {
+                display: none !important;
+            }
+
+            /* 인쇄 시에는 선택 여부와 상관없이 무조건 기본 스타일로 강제 (파란 테두리 제거) */
+            .card.in-basket.selected,
+            body.print-selected-only .card.in-basket.selected {
+                border: 1px solid #ccc !important;
+                background-color: transparent !important;
+                /* 배경 흰색/투명 */
+                transform: none !important;
+                box-shadow: none !important;
+            }
+
+            /* --- 레이아웃 옵션 (가로 폭은 유동적, 높이는 안전하게 고정) --- */
+            /* 빈 페이지 방지를 위해 높이를 보수적으로 설정 */
+
+            /* 1. 2x1 (2장) - Grid 대신 Float 방식 사용 (페이지 넘김 버그 해결용) */
+            body.print-mode-2x1 #basket-grid {
+                display: block !important;
+                /* Grid 해제 */
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+
+            /* clearfix */
+            body.print-mode-2x1 #basket-grid::after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            /* 카드 개별 스타일 (Float) */
+            body.print-mode-2x1 .card.in-basket {
+                float: left !important;
+                width: 49% !important;
+                /* 좌우 여백 고려 */
+                height: 190mm !important;
+                /* 높이는 안전하게 200mm 미만 */
+                margin: 0 0.5% 10px 0.5% !important;
+                /* 좌우 간격 1% 효과 */
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                box-sizing: border-box !important;
+                padding: 0 !important;
+                /* 여백 완전 제거 */
+            }
+
+            body.print-mode-2x1 .card-name {
+                font-size: 28px;
+                margin-top: 0;
+                padding: 0;
+                background: transparent;
+            }
+
+            /* 2. 4x2 (8장) - 높이 대폭 확대 (75 -> 95mm) */
+            /* 2. 4x2 (8장) - Float (Grid page break bug fix) */
+            body.print-mode-4x2 #basket-grid {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+
+            body.print-mode-4x2 #basket-grid::after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            /* === 3x2 Layout (Same Card Size as 4x2, but 3 per row) === */
+            /* Container Setup (Block for Floating) */
+            body.print-mode-3x2 #basket-grid {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+
+            body.print-mode-3x2 #basket-grid::after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            body.print-mode-3x2 .card.in-basket {
+                float: left !important;
+                width: 24% !important;
+                /* Same as 4x2 */
+                height: 95mm !important;
+                /* Same as 4x2 */
+                margin: 0 0.5% 5px 0.5% !important;
+                /* EXACTLY Same as 4x2 (Left aligned, right column empty) */
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                box-sizing: border-box !important;
+                padding: 0 !important;
+            }
+
+            body.print-mode-3x2 .card.in-basket:nth-child(3n+1) {
+                clear: both;
+            }
+
+            body.print-mode-3x2 .print-card {
+                height: 100%;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border: 1px dotted #ccc;
+                box-sizing: border-box;
+            }
+
+            body.print-mode-3x2 .print-card-image {
+                flex: 1;
+                width: 100%;
+                min-height: 0;
+                object-fit: contain;
+                max-width: 100% !important;
+                max-height: 100% !important;
+            }
+
+            body.print-mode-3x2 .card-name {
+                flex-shrink: 0;
+                font-size: 16px;
+                /* Same as 4x2 */
+                margin-top: 0;
+                padding: 0;
+                background: transparent;
+                width: 100%;
+                text-align: center;
+            }
+
+            body.print-mode-4x2 .card.in-basket {
+                float: left !important;
+                width: 24% !important;
+                /* 4 columns -> ~25% minus margins */
+                height: 95mm !important;
+                /* Updated for 5mm margin optimization */
+                margin: 0 0.5% 5px 0.5% !important;
+                /* Gaps */
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                box-sizing: border-box !important;
+                padding: 0 !important;
+                /* 여백 완전 제거 */
+            }
+
+            body.print-mode-4x2 .print-card {
+                /* Inner content strict sizing */
+                height: 100%;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border: 1px dotted #ccc;
+                box-sizing: border-box;
+            }
+
+            body.print-mode-4x2 .print-card-image {
+                flex: 1;
+                width: 100%;
+                min-height: 0;
+                object-fit: contain;
+                max-width: 100% !important;
+                max-height: 100% !important;
+            }
+
+            body.print-mode-4x2 .card-name {
+                flex-shrink: 0;
+                font-size: 16px;
+                margin-top: 0;
+                padding: 0;
+                background: transparent;
+                width: 100%;
+                text-align: center;
+            }
+
+            /* 3. 5x3 (15장) - 높이 조정 (64 -> 62mm) */
+            body.print-mode-5x3 #basket-grid {
+                grid-template-columns: repeat(5, 1fr) !important;
+                grid-auto-rows: 62mm !important;
+                /* Adjusted for safety */
+                gap: 2mm !important;
+                padding-bottom: 0 !important;
+            }
+
+            body.print-mode-5x3 .card.in-basket {
+                padding: 0 !important;
+                /* 여백 완전 제거 */
+            }
+
+            body.print-mode-5x3 .print-card {
+                height: 100%;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border: 1px dotted #ccc;
+                box-sizing: border-box;
+            }
+
+            body.print-mode-5x3 .print-card-image {
+                flex: 1;
+                width: 100%;
+                min-height: 0;
+                object-fit: contain;
+                max-width: 100% !important;
+                max-height: 100% !important;
+            }
+
+            body.print-mode-5x3 .card-name {
+                flex-shrink: 0;
+                font-size: 14px;
+                margin-top: 0;
+                padding: 0;
+                background: transparent;
+                width: 100%;
+                text-align: center;
+            }
+
+            /* 4. 7x4 (28장) - 높이 조정 (48 -> 46mm) */
+            body.print-mode-7x4 #basket-grid {
+                grid-template-columns: repeat(7, 1fr) !important;
+                grid-auto-rows: 46mm !important;
+                /* Adjusted for safety */
+                gap: 2mm !important;
+                padding-bottom: 0 !important;
+            }
+
+            body.print-mode-7x4 .card.in-basket {
+                padding: 0 !important;
+                /* 여백 완전 제거 */
+            }
+
+            body.print-mode-7x4 .print-card {
+                height: 100%;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border: 1px dotted #ccc;
+                box-sizing: border-box;
+            }
+
+            body.print-mode-7x4 .print-card-image {
+                flex: 1;
+                width: 100%;
+                min-height: 0;
+                object-fit: contain;
+                max-width: 100% !important;
+                max-height: 100% !important;
+            }
+
+
+            body.print-mode-7x4 .card-name {
+                flex-shrink: 0;
+                font-size: 13px;
+                /* Slightly larger for readability */
+                margin-top: 0;
+                padding: 0;
+                background: transparent;
+                width: 100%;
+                text-align: center;
+            }
+
+            /* 5. 10x5 (50장) - 높이 조정 (38 -> 36mm) */
+            body.print-mode-10x5 #basket-grid {
+                grid-template-columns: repeat(10, 1fr) !important;
+                grid-auto-rows: 36mm !important;
+                /* Adjusted for safety */
+                gap: 2mm !important;
+                padding-bottom: 0 !important;
+            }
+
+            body.print-mode-10x5 .card.in-basket {
+                padding: 0 !important;
+                /* 여백 완전 제거 */
+            }
+
+            body.print-mode-10x5 .print-card {
+                height: 100%;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border: 1px dotted #ccc;
+                box-sizing: border-box;
+            }
+
+            body.print-mode-10x5 .print-card-image {
+                flex: 1;
+                width: 100%;
+                min-height: 0;
+                object-fit: contain;
+                max-width: 100% !important;
+                max-height: 100% !important;
+            }
+
+            body.print-mode-10x5 .card-name {
+                flex-shrink: 0;
+                font-size: 9px;
+                margin-top: 0;
+                padding: 0;
+                background: transparent;
+                width: 100%;
+                text-align: center;
+            }
+
+            /* 테두리 숨김 강제 (선택 인쇄 포함) */
+            body.hide-border .card.in-basket,
+            body.hide-border .print-card,
+            body.hide-border .card.in-basket.selected,
+            body.hide-border.print-selected-only .card.in-basket.selected {
+                border: none !important;
+            }
+
+            /* 저작권 배너 확실하게 숨기기 (안전장치) */
+            .copyright-banner {
+                display: none !important;
+                height: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+                overflow: hidden !important;
+                opacity: 0 !important;
+            }
+        }
+
+        /* === Portrait (Se-ro) Modes (Print Only) - REMOVED === */
+
+        /* === Fix for Print Selected Layout === */
+        /* Disable default nth-child clearing because selected items might be non-contiguous in DOM */
+        body.print-selected-only .card.in-basket {
+            clear: none !important;
+        }
+
+        /* Enable clearing only where JS calculated a new row */
+        body.print-selected-only .card.in-basket.force-new-row {
+            clear: both !important;
+        }
+
+        /* === Tree View Styles (Preset Folders) === */
+        /* === Tree View Styles (Preset Folders) === */
+        .tree-root {
+            text-align: left;
+            margin-top: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            background: #fafafa;
+            /* Grid Layout */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: start;
+        }
+
+        .tree-node-wrapper {
+            /* Wrapper for Node + Children */
+            break-inside: avoid;
+            margin-bottom: 5px;
+            /* Ensure it takes full width of grid cell if needed, but grid handles cell sizing */
+        }
+
+        .tree-node {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        /* Folder Specific Style */
+        .tree-node.type-folder {
+            background-color: #fff8e1;
+            /* Light Yellow */
+            border: 1px solid #ffe0b2;
+            font-weight: bold;
+            color: #5d4037;
+        }
+
+        /* Preset Specific Style */
+        /* === 3. Simple Presets (Yellow Tags) === */
+        .preset-section {
+            background: #FFF8E1;
+            padding: 6px 15px;
+            /* Reduced padding */
+            border: 2px solid #FFB74D;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            /* Stack header and list vertically */
+            gap: 4px;
+            /* Reduced gap between header and list */
+            margin-bottom: 15px;
+        }
+
+        .preset-title {
+            font-weight: bold;
+            color: #F57C00;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 1.1rem;
+        }
+
+        .preset-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        .preset-input,
+        .preset-search-input {
+            padding: 5px 12px;
+            border: 1px solid #FFE0B2;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.2s;
+            background: #fff;
+            height: 32px;
+            /* Force consistent height */
+            box-sizing: border-box;
+        }
+
+        .preset-input:focus,
+        .preset-search-input:focus {
+            border-color: #FF9800;
+            box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+        }
+
+        .save-preset-btn {
+            background-color: #FF9800;
+            color: #fff;
+            border: none;
+            padding: 0 15px;
+            /* Use height for alignment */
+            height: 32px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            box-shadow: 0 2px 4px rgba(245, 124, 0, 0.3);
+        }
+
+        .save-preset-btn:hover {
+            background-color: #F57C00;
+            transform: translateY(-1px);
+        }
+
+        .add-all-btn {
+            padding: 8px 15px;
+            background: #9C27B0;
+            /* Purple */
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+        }
+
+        .add-all-btn:hover {
+            background: #7B1FA2;
+            transform: translateY(-1px);
+        }
+
+        .filter-divider {
+            height: 20px;
+            width: 1px;
+            background-color: #ddd;
+            margin: 0 5px;
+        }
+
+        .backup-btn {
+            background-color: #fff;
+            color: #555;
+            border: 1px solid #FFCC80;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+
+        .backup-btn:hover {
+            background-color: #FFF3E0;
+            border-color: #FFB74D;
+        }
+
+        .preset-list-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            /* Slightly tighter horizontal gap */
+            width: 100%;
+            margin-top: 0px;
+            /* Removed margin, relying on parent gap */
+            align-items: center;
+        }
+
+        .preset-tag {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            /* White background as requested */
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: 1px solid #FFAB40;
+            /* Stronger orange border */
+            transition: all 0.2s;
+            user-select: none;
+            color: #333;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .preset-tag:hover {
+            background-color: #FFF3E0;
+            border-color: #FF9800;
+            transform: translateY(-1px);
+        }
+
+        .preset-tag .delete-btn {
+            margin-left: 8px;
+            color: #FF5252;
+            /* Red X */
+            font-weight: normal;
+            cursor: pointer;
+            font-size: 0.9rem;
+            line-height: 1;
+        }
+
+        .preset-tag .delete-btn:hover {
+            color: #D32F2F;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+        }
+
+        .preset-tag:hover {
+            background-color: #ffecb3;
+            transform: translateY(-1px);
+        }
+
+        .preset-tag .delete-btn {
+            margin-left: 8px;
+            color: #ef6c00;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        .preset-tag .delete-btn:hover {
+            color: #d84315;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+        }
+
+        .backup-group {
+            display: flex;
+            gap: 5px;
+        }
+
+        .backup-btn {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .backup-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* === Undo/Redo Buttons === */
+        .undo-redo-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .undo-redo-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            border: 1.5px solid #ccc;
+            color: #555;
+            padding: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .undo-redo-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .undo-redo-btn:hover:not(:disabled) {
+            background-color: #f0f0f0;
+            border-color: #999;
+            color: #333;
+            transform: scale(1.05);
+        }
+
+        .undo-redo-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .undo-redo-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background-color: #f5f5f5;
+            border-color: #ddd;
+        }
+
+        /* === Privacy Notice (Upload Modal) === */
+        .privacy-notice-box {
+            background-color: #E3F2FD;
+            /* Soft Blue */
+            border: 1px solid #BBDEFB;
+            color: #1976D2;
+            /* Darker Blue Text */
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: bold;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 5px rgba(33, 150, 243, 0.1);
+        }
+
+        .privacy-icon {
+            font-size: 1.6rem;
+        }
+
+        /* === Search Box High Visibility === */
+        .search-box {
+            width: 280px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: 2px solid #2196F3;
+            /* Primary Blue Border */
+            border-radius: 25px;
+            /* Pill Shape */
+            outline: none;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            /* Subtle shadow */
+            color: #333;
+        }
+
+        .search-box::placeholder {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .search-box:focus {
+            width: 300px;
+            /* Slight expansion on focus */
+            border-color: #1976D2;
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.25);
+            /* Glow effect */
+        }
+
+        /* Usage Tip Button - Green Theme */
+        #usage-tip-btn {
+            border: none;
+            color: white;
+            background-color: #4CAF50;
+            /* Green to match basket theme */
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #usage-tip-btn:hover {
+            background-color: #388E3C;
+            /* Darker Green on hover */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        /* === 4. 언어 치료 모드 (Tabs & Accordion) === */
+        .tab-bar {
+            display: flex;
+            gap: 10px;
+            margin-left: 20px;
+        }
+
+        .tab-btn {
+            padding: 8px 15px;
+            border: none;
+            background: #f1f3f5;
+            color: #555;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #FF9800;
+            /* Orange for active tab */
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Sidebar Containers */
+        #articulation-menu,
+        #language-menu {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Accordion Styles */
+        .accordion-item {
+            border-bottom: 1px solid #34495e;
+        }
+
+        .accordion-header {
+            padding: 12px 15px;
+            background: #2c3e50;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .accordion-header:hover {
+            background: #34495e;
+        }
+
+        .accordion-header.active {
+            background: #34495e;
+            color: #FF9800;
+            /* Highlight active parent */
+        }
+
+        .accordion-body {
+            display: none;
+            background: #233140;
+            flex-direction: column;
+        }
+
+        .accordion-body.open {
+            display: flex;
+        }
+
+        .sub-cat-btn {
+            padding: 10px 20px;
+            color: #bdc3c7;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.95rem;
+            border-left: 3px solid transparent;
+        }
+
+        .sub-cat-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sub-cat-btn.active {
+            color: white;
+            border-left-color: #FF9800;
+            background: rgba(255, 152, 0, 0.1);
+        }
+
+        .caret {
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+
+        .accordion-header.active .caret {
+            transform: rotate(180deg);
+        }
+
+        /* Global Search Bar (Header) */
+        /* Global Search Bar (Coupang Style) */
+        .global-search-container {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 0;
+            border-radius: 2px;
+            /* Sharp corners like Coupang */
+            border: 2px solid #4285f4;
+            /* Coupang Blue */
+            width: 100%;
+            height: 38px;
+            /* Fixed height */
+            box-shadow: none;
+            /* Flat */
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+
+        .global-search-container:focus-within {
+            border-color: #4285f4;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .global-search-input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.95rem;
+            width: 100%;
+            height: 100%;
+            font-weight: normal;
+            text-align: left;
+            padding-left: 12px;
+            color: #333;
+        }
+
+        .search-icon {
+            padding: 0 12px;
+            font-size: 1.2rem;
+            color: #4285f4;
+            /* Blue Icon */
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            background: white;
+            /* Visual separation if needed */
+        }
+
+        .search-clear-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #999;
+            cursor: pointer;
+            padding: 0 5px;
+            line-height: 1;
+        }
+
+        .search-clear-btn:hover {
+            color: #666;
+        }
+
+        /* Print Hide */
+        @media print {
+            .global-search-container {
+                display: none !important;
+            }
+        }
+
+        /* === FAILSAFE PRINT RESET === */
+        @media print {
+
+            body,
+            html,
+            .container,
+            .main-content,
+            .basket-section,
+            #basket-grid {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                margin: 0 !important;
+                margin-left: 0 !important;
+                /* Explicit override */
+                padding: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+                background: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                position: static !important;
+                left: auto !important;
+                top: auto !important;
+                transform: none !important;
+            }
+
+            #basket-grid {
+                display: grid !important;
+                justify-content: center !important;
+            }
+
+            .card.in-basket {
+                opacity: 1 !important;
+                visibility: visible !important;
+                display: flex !important;
+                page-break-inside: avoid !important;
+                border: 1px solid #000 !important;
+                /* Force border visibility */
+                color: #000 !important;
+                /* Force text black */
+            }
+
+            /* Guide Button (Header Integration) */
+            .guide-btn {
+                background: #FF9800;
+                /* Orange accent */
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 20px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 0.95rem;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                white-space: nowrap;
+                /* Prevent wrapping */
+                flex-shrink: 0;
+                /* Don't shrink icon/text if possible, or minimally */
+            }
+
+            .guide-btn-image {
+                background: none;
+                border: none;
+                padding: 0;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                transition: transform 0.2s;
+            }
+
+            .guide-btn-image:hover {
+                transform: scale(1.05);
+            }
+
+            .guide-btn-image img {
+                height: 38px;
+                /* Match search bar height */
+                width: auto;
+                display: block;
+            }
+
+            .guide-btn:hover {
+                background: #F57C00;
+                transform: translateY(-1px);
+            }
+
+            /* Ensure content inside cards is visible */
+            .card.in-basket * {
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+
+        }
+
+        /* === Responsive Layout for 13-inch Laptops (Approx < 1400px) === */
+        @media screen and (max-width: 1400px) {
+
+            /* 1. Sidebar Slimming */
+            .sidebar {
+                width: 200px !important;
+                /* Shrink sidebar */
+                top: 150px !important;
+                /* Push sidebar down further to clear taller header */
+            }
+
+            .main-content {
+                margin-left: 200px !important;
+                /* Adjust main content margin */
+            }
+
+            .sidebar-title,
+            .phoneme-btn {
+                font-size: 0.95rem;
+                /* Smaller text */
+                padding: 10px;
+                /* Reduced padding */
+            }
+
+            /* 2. Header Tightening */
+            .header-top-row {
+                padding: 5px 10px;
+                gap: 5px;
+            }
+
+            .header-bottom-row {
+                padding: 5px 10px;
+                gap: 10px;
+            }
+
+            /* 3. Global Search Shrink */
+            .global-search-container {
+                /* max-width: 300px; REMOVED to allow 450px */
+                width: 100%;
+                /* flex: 1; REMOVED - Grid layout handles this */
+            }
+
+            .global-search-input {
+                font-size: 0.9rem;
+                /* Smaller input font */
+            }
+
+            /* 4. Button & Text Scaling */
+            h1 {
+                font-size: 1rem;
+                /* Smaller title */
+            }
+
+            .nav-btn,
+            .action-btn,
+            #add-all-btn {
+                /* Assuming button classes */
+                padding: 5px 10px;
+                font-size: 0.9rem;
+            }
+
+            .copyright-banner {
+                font-size: 0.7rem;
+                /* Smaller banner text */
+            }
+        }
+
+        /* Guide Button Style */
+        /* Guide Button Style */
+        /* Deprecated text button style kept for reference or fallback */
+        .guide-btn {
+            display: none;
+        }
+
+        /* Premium Guide Button Image */
+        #tutorial-btn,
+        .guide-btn-image {
+            background: transparent !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            appearance: none;
+            /* Remove OS styles */
+            -webkit-appearance: none;
+        }
+
+        .guide-btn-image img {
+            height: 55px;
+            /* Increased size for visibility */
+            width: auto;
+            display: block;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
+        }
+
+        .guide-btn-image:hover {
+            transform: scale(1.05);
+        }
+
+        .guide-btn-image:active {
+            transform: scale(0.95);
+        }
+
+
+
+        /* Print Layout Dropdown Style */
+        .print-layout-select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: #333;
+            background-color: white;
+            cursor: pointer;
+            outline: none;
+            min-width: 140px;
+        }
+
+        .print-layout-select:focus {
+            border-color: #2196F3;
+        }
+
+        @media print {
+
+            .guide-btn,
+            .print-layout-select {
+                display: none !important;
+            }
+        }
+
+        /* === Card Menu Button (Kebab Menu) === */
+        .card-menu-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            /* Revert to Option 1: Light Theme (Subtle) */
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            color: #222;
+            /* Darker dots */
+            font-size: 16px;
+            /* Bigger dots */
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0.75;
+            /* Increased to 75% */
+            /* Balanced between hidden(0.3) and dizzy(1.0) */
+            transition: all 0.2s ease;
+            padding-bottom: 3px;
+        }
+
+        /* Hover State: Fully visible & Active */
+        .card-menu-btn:hover {
+            opacity: 1.0;
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            /* Shadow only on hover */
+            transform: scale(1.1);
+        }
+
+        /* Ensure card hover also triggers visibility */
+        .card:hover .card-menu-btn {
+            opacity: 0.8;
+            /* Make it visible enough when mouse is near */
+        }
+
+        /* But button hover override */
+        .card:hover .card-menu-btn:hover {
+            opacity: 1.0;
+        }
+
+        /* === Tutorial (Driver.js) Custom Styles === */
+        /* Make the guide popover stand out! */
+        .driver-popover {
+            border: 3px solid #ff9800 !important;
+            /* Orange Border */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+            /* Strong Shadow */
+            border-radius: 12px !important;
+        }
+
+        /* Force hide navigation buttons during tutorial */
+        body.tutorial-active .driver-popover-next-btn,
+        body.tutorial-active .driver-popover-prev-btn {
+            display: none !important;
+        }
+
+        /* === Guide Button Attention Animation (Bouncy & Fast) === */
+        @keyframes guide-bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            40% {
+                transform: translateY(-4px) scale(1.05);
+                /* Jump up */
+                box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+            }
+
+            60% {
+                transform: translateY(-2px) scale(1.02);
+                /* Little bounce */
+            }
+        }
+
+        #tutorial-btn {
+            animation: guide-bounce 2.5s infinite ease-in-out;
+            /* 2.5초마다 통통 튑니다 (더 눈에 띔) */
+            border-radius: 12px;
+            /* 둥근 모서리 보정 */
+            transition: all 0.3s ease;
+            transform-origin: center bottom;
+            /* 바닥 기준 점프 */
+        }
+
+        #tutorial-btn:hover {
+            animation: none;
+            /* 호버 시 애니메이션 멈춤 (집중) */
+            transform: scale(1.08) !important;
+            filter: brightness(1.05);
+        }
