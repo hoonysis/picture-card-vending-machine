@@ -13,6 +13,7 @@ from PIL import Image
 import hashlib
 import threading
 import time
+import unicodedata
 
 # [Version Control] Global Data Version (Persisted) - REMOVED (Moved to File-Specific)
 # VERSION_FILE = 'version.txt'
@@ -934,7 +935,6 @@ def load_reference_dict():
                 # [CHANGED] Strict Matching Logic (User Request)
                 # No more fuzzy mapping. User guarantees Sheet text matches Admin UI text.
                 # Use minimal normalization: Remove spaces, standardize separators.
-                import unicodedata
 
                 def normalize_category(txt):
                     if not txt or txt.lower() == 'nan': return ""

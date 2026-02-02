@@ -4,6 +4,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 import os
 import json
+import unicodedata
 
 class SyncManager:
     def __init__(self, key_file_path, sheet_url):
@@ -116,7 +117,6 @@ class SyncManager:
                 
                 # [CHANGED] Strict Matching Logic (User Request)
                 # No more fuzzy mapping. User guarantees Sheet text matches Admin UI text.
-                import unicodedata
 
                 def normalize_category(txt):
                     if not txt or txt.lower() == 'nan': return ""
