@@ -910,7 +910,11 @@ def load_reference_dict():
         for idx, row in df.iterrows():
             try:
                 # Safe access by position
+                # [FIX] NFC Normalization for Word Key
+                # Ensure Dictionary Key is always NFC to match Client Input
                 word = str(row.iloc[1]).strip()
+                if word and word != 'nan':
+                    word = unicodedata.normalize('NFC', word)
                 raw_main = str(row.iloc[2]).strip()
                 raw_sub = str(row.iloc[3]).strip()
 

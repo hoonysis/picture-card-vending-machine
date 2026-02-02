@@ -76,6 +76,9 @@ class SyncManager:
                 if len(row) < 4: continue
                 
                 word = str(row[1]).strip()
+                if word:
+                    word = unicodedata.normalize('NFC', word)
+
                 raw_main = str(row[2]).strip()
                 raw_sub = str(row[3]).strip()
                 
