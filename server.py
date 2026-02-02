@@ -1030,6 +1030,9 @@ def analyze_name():
     if not name:
         return jsonify([])
 
+    # [FIX] NFC Normalization for Input (Critical for matching Sheet Keys)
+    name = unicodedata.normalize('NFC', name).strip()
+
     # 1. Determine Pronunciation
     if manual_pronunciation:
         pronunciation = manual_pronunciation

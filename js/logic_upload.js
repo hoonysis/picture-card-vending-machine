@@ -93,6 +93,9 @@ function processNextInQueue() {
 
     const file = uploadQueue.shift(); // Get next file
 
+    // [Fix] Reset Form State (Clear previous analysis)
+    resetUploadForm();
+
     // Mock FileInput
     const container = new DataTransfer();
     container.items.add(file);
@@ -101,6 +104,30 @@ function processNextInQueue() {
     // Open Interceptor (Progress passed as argument)
     openRenameInterceptor(file, uploadQueue.length);
 }
+
+// [FIX] Reset Form Helper
+function resetUploadForm() {
+    // 1. Clear Name Inputs
+    const ids = ['input-name', 'input-display-name', 'input-pronunciation', 'sr-input'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    // 2. Uncheck Language Radios
+    const radios = document.querySelectorAll('input[name="language_selection"]');
+    radios.forEach(r => r.checked = false);
+
+    // 3. Clear Suggestions (if any)
+    const container = document.getElementById('sugg-container');
+    if (container) container.innerHTML = '';
+
+    // 4. Reset Preview (Optional, but cleaner)
+    const preview = document.getElementById('preview');
+    // if (preview) preview.src = ''; // Keeping preview might be better UX until new one loads? 
+    // Actually interceptor loads new one immediately.
+}
+
 
 // --- Analysis Logic ---
 // --- Analysis Logic ---
