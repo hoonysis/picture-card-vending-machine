@@ -864,6 +864,9 @@ SHEET_URL = 'https://docs.google.com/spreadsheets/d/114C5f1aowSR6TVG4OtY-RwmvCgb
 # Initialize SyncManager
 sync_manager = SyncManager(CREDENTIALS_PATH, SHEET_URL)
 
+# [Diagnostic] Global Error State
+last_reference_error = "No error recorded"
+
 def load_reference_dict():
     """
     Load reference data.
@@ -873,9 +876,11 @@ def load_reference_dict():
     """
     global reference_cache
     global reference_cache_mtime
+    global last_reference_error
     
     path = os.path.join(BASE_DIR, REFERENCE_FILE)
     if not os.path.exists(path):
+        last_reference_error = f"File not found at {path}"
         return {}
         
     # Check modification time
@@ -1005,11 +1010,35 @@ def load_reference_dict():
         print(f"Loaded {len(ref_dict)} words from reference dictionary.")
         reference_cache = ref_dict
         reference_cache_mtime = current_mtime
+        last_reference_error = "Success" # Reset error
         return reference_cache
 
     except Exception as e:
         print(f"Error loading reference dictionary: {e}")
+        last_reference_error = str(e) # Capture error
         return {}
+
+@app.route('/api/debug/status', methods=['GET'])
+def debug_status():
+    """Diagnostic Endpoint to check server internal state"""
+    
+    path = os.path.join(BASE_DIR, REFERENCE_FILE)
+    exists = os.path.exists(path)
+    size = os.path.getsize(path) if exists else 0
+    
+    # Try to verify cache state
+    cache_len = len(reference_cache) if reference_cache else 0
+    
+    return jsonify({
+        'worker_id': os.getpid(), # Identify which worker answered
+        'reference_file': REFERENCE_FILE,
+        'full_path': path,
+        'file_exists': exists,
+        'file_size_bytes': size,
+        'cache_loaded_count': cache_len,
+        'last_error': last_reference_error,
+        'pandas_version': pd.__version__
+    })
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze_name():
