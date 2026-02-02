@@ -10,6 +10,7 @@ env/
 
 # VSCode
 .vscode/
+*.code-workspace
 
 # System
 Thumbs.db
@@ -25,6 +26,7 @@ Desktop.ini
 user_images/
 user_audio/
 word.xlsx
+reference_words.xlsx
 user_cards.json
 user_presets.json
 credentials.json
@@ -44,6 +46,40 @@ run_converter.bat
 run_server.bat
 0_통합런처.bat
 이미지를_여기로_드래그하세요.bat
+
+# Development Tools & Scripts (Exclude from Repo)
+check_*.py
+convert_*.py
+create_*.py
+fix_*.py
+migrate_*.py
+move_*.py
+undo_*.py
+populate_*.py
+generate_*.py
+process_image.py
+project_backup.py
+brain_manager.py
+sync_manager.py
+rename_subcat.py
+reproduce_issue.py
+restore_*.py
+rollback_data.py
+scan_backups.py
+test_*.py
+verify_pronunciation.py
+launcher.py
+launcher_error.log
+responsive_test.html
+wsgi_debug.py
+
+# Documentation & Misc
+*.md
+*.txt
+!requirements.txt
+setup_google_sheets.md
+코딩
+아이콘(.ico)
 
 # Picture Data Folders (Explicitly Ignore)
 01_*/
