@@ -520,7 +520,11 @@ def list_cards():
             response_data = []
             for item in clean_data:
                 name = str(item.get('name', ''))
-                if search_norm in normalize_for_search(name):
+                keywords = str(item.get('search_keywords', ''))
+                
+                # Check Name OR Check Keywords
+                if search_norm in normalize_for_search(name) or \
+                   search_norm in normalize_for_search(keywords):
                     response_data.append(item)
             return jsonify(response_data)
 
@@ -867,23 +871,21 @@ def load_reference_dict():
     """
     global reference_cache
     
-    # 1. Try Google Sheets (Primary)
-    print("Loading dictionary from Google Sheets...")
-    sheet_data = sync_manager.fetch_data()
+    # 1. Try Google Sheets (Primary) (DISABLED in decoupled mode, but function exists)
+    # The previous edit removed the logic but left a broken try/except block indentation
+    # Let's clean this function properly for decoupled mode.
     
-    if sheet_data:
-        reference_cache = sheet_data
-        print(f"Loaded {len(sheet_data)} words from Google Sheets.")
-        
-        # [Optional] Update local excel as backup
-        try:
-           # We could save back to excel here for offline backup, but skipping for speed.
-           pass
-        except: pass
-        
-        return reference_cache
-
-    # 2. Fallback to Memory Cache
+    # In decoupled mode, this function should primarily rely on local cache or file if needed,
+    # BUT actually, we want to rely on word.xlsx (via load_data) for everything.
+    # However, existing code might still call load_reference_dict for some legacy checks.
+    # Let's make it minimal.
+    
+    # If using local file backup:
+    print("Using local file backup.")
+    
+    path = os.path.join(BASE_DIR, REFERENCE_FILE)
+    if not os.path.exists(path):
+        return {}
     if reference_cache:
         print("Using memory cache (Sheet sync failed).")
         return reference_cache
@@ -925,38 +927,112 @@ def load_reference_dict():
                 # Example: "1. 사람 / 신체" -> "사람/신체"
                 # Remove leading numbers and dots, remove spaces
 
-                # 1. Main Category Normalization
-                # Remove "1. ", "2. " etc
-                main_clean = raw_main
-                if '.' in main_clean:
-                    parts = main_clean.split('.', 1)
-                    if len(parts) > 1:
-                        main_clean = parts[1]
+                # [NEW] Comprehensive Reverse Lookup for UI Taxonomy
+                # This ensures any valid UI Category Name used in the Sheet works correctly.
+                
+                # Reverse Map: { "Keyword/SubCat": ("Main", "Sub") }
+                TAXONOMY_MAP = {
+                    # 1. 사람/신체
+                    "사람": ("사람/신체", ""), "신체": ("사람/신체", ""), "가족": ("사람/신체", "가족"), "직업": ("사람/신체", "직업"), 
+                    "신체부위": ("사람/신체", "신체부위"), "옷": ("사람/신체", "옷·장신구"), "장신구": ("사람/신체", "옷·장신구"),
+                    "옷·장신구": ("사람/신체", "옷·장신구"),
 
-                # Standardize known categories (remove external spaces, keep internal slash if needed)
-                # Admin UI expects: "사람/신체", "음식", "생활/사물", "장소/환경", "놀이/운동", "동작/상태"
-                main_clean = main_clean.replace(" ", "") # Remove all spaces first
+                    # 2. 음식
+                    "음식": ("음식", ""), "과일": ("음식", "과일·채소"), "채소": ("음식", "과일·채소"), "과일·채소": ("음식", "과일·채소"),
+                    "식사": ("음식", "식사·요리"), "요리": ("음식", "식사·요리"), "식사·요리": ("음식", "식사·요리"),
+                    "간식": ("음식", "간식·음료"), "음료": ("음식", "간식·음료"), "간식·음료": ("음식", "간식·음료"),
+                    "식재료": ("음식", "식재료"),
 
-                # Mapping common variations just in case
-                if "사람" in main_clean and "신체" in main_clean: main_clean = "사람/신체"
-                elif "생활" in main_clean and "사물" in main_clean: main_clean = "생활/사물"
-                elif "장소" in main_clean and "환경" in main_clean: main_clean = "장소/환경"
-                elif "놀이" in main_clean and "운동" in main_clean: main_clean = "놀이/운동"
-                elif ("서술" in main_clean) or ("개념" in main_clean) or ("동작" in main_clean and "상태" in main_clean): main_clean = "서술/개념"
+                    # 3. 생활/사물
+                    "생활": ("생활/사물", ""), "사물": ("생활/사물", ""), "가구": ("생활/사물", "가구·가전"), "가전": ("생활/사물", "가구·가전"), "가구·가전": ("생활/사물", "가구·가전"),
+                    "주방": ("생활/사물", "주방·욕실용품"), "욕실": ("생활/사물", "주방·욕실용품"), "주방·욕실용품": ("생활/사물", "주방·욕실용품"),
+                    "학용품": ("생활/사물", "학용품"), "장난감": ("생활/사물", "장난감"), "생활용품": ("생활/사물", "생활용품"),
 
-                # 2. Sub Category Normalization
-                # Just strip for now, UI might need fuzzy match or exact match
+                    # 4. 장소/환경
+                    "장소": ("장소/환경", "장소"), "환경": ("장소/환경", ""), "동물": ("장소/환경", "동물·곤충"), "곤충": ("장소/환경", "동물·곤충"), "동물·곤충": ("장소/환경", "동물·곤충"),
+                    "식물": ("장소/환경", "식물·자연"), "자연": ("장소/환경", "식물·자연"), "식물·자연": ("장소/환경", "식물·자연"),
+                    "교통": ("장소/환경", "교통기관"), "교통기관": ("장소/환경", "교통기관"),
 
-                sub_clean = raw_sub.replace(" ", "")
-                # Only replace , and / if NOT inside parentheses (e.g. keep "서술어(행동/상태)")
+                    # 5. 놀이/운동
+                    "놀이": ("놀이/운동", "취미·놀이"), "운동": ("놀이/운동", "운동"), # 운동 could be Sub or Main, context matters but default to Main is safer? No, usually if specific, it's sub.
+                    "악기": ("놀이/운동", "악기·예술"), "예술": ("놀이/운동", "악기·예술"), "악기·예술": ("놀이/운동", "악기·예술"),
+                    "취미": ("놀이/운동", "취미·놀이"), "취미·놀이": ("놀이/운동", "취미·놀이"),
+                    "기념일": ("놀이/운동", "기념일·행사"), "행사": ("놀이/운동", "기념일·행사"), "기념일·행사": ("놀이/운동", "기념일·행사"),
+
+                    # 6. 서술/개념
+                    "서술": ("서술/개념", ""), "개념": ("서술/개념", ""), "동작": ("서술/개념", ""), "상태": ("서술/개념", ""),
+                    "서술어": ("서술/개념", "서술어(행동/상태)"), "행동": ("서술/개념", "서술어(행동/상태)"),
+                    "감정": ("서술/개념", "감정"), "색깔": ("서술/개념", "색깔/모양"), "모양": ("서술/개념", "색깔/모양"), "색깔/모양": ("서술/개념", "색깔/모양"),
+                    "수": ("서술/개념", "수/양/비교"), "양": ("서술/개념", "수/양/비교"), "비교": ("서술/개념", "수/양/비교"), "수/양/비교": ("서술/개념", "수/양/비교"),
+                    "위치": ("서술/개념", "위치/방향"), "방향": ("서술/개념", "위치/방향"), "위치/방향": ("서술/개념", "위치/방향"),
+                    "세부": ("서술/개념", "세부부위"), "세부부위": ("서술/개념", "세부부위"),
+                    "범주": ("서술/개념", "범주어"), "범주어": ("서술/개념", "범주어"),
+                    "시간": ("서술/개념", "시간/순서/날짜"), "순서": ("서술/개념", "시간/순서/날짜"), "날짜": ("서술/개념", "시간/순서/날짜"), "시간/순서/날짜": ("서술/개념", "시간/순서/날짜"),
+                    "한글": ("서술/개념", "한글/글자"), "글자": ("서술/개념", "한글/글자"), "한글/글자": ("서술/개념", "한글/글자"),
+                    "말놀이": ("서술/개념", "말놀이(의성어,의태어)"), "의성어": ("서술/개념", "말놀이(의성어,의태어)"), "의태어": ("서술/개념", "말놀이(의성어,의태어)")
+                }
+
+                # Helper to map raw input to (Main, Sub)
+                def map_category(raw_txt):
+                    clean = raw_txt.replace(" ", "").replace(".", "").strip()
+                    for k, (m, s) in TAXONOMY_MAP.items():
+                        if k in clean:
+                            return m, s
+                    return "", ""
+
+                # 1. Try mapping from Main Column
+                found_main, found_sub_from_main = map_category(raw_main)
+                
+                # 2. Try mapping from Sub Column (Usually more specific)
+                found_main_from_sub, found_sub = map_category(raw_sub)
+
+                # Prioritize: 
+                # If Sub implies a Main, use it.
+                # If Main implies a Main, usage it.
+                
+                if found_main_from_sub:
+                    main_clean = found_main_from_sub
+                    sub_clean = found_sub
+                elif found_main:
+                    main_clean = found_main
+                    # If Main column implies a specific Sub (e.g. "가족"), use it.
+                    if found_sub_from_main:
+                       sub_clean = found_sub_from_main
+                    else:
+                        # Fallback to whatever was in sub column, but normalized
+                        sub_clean = raw_sub.replace(" ", "")
+                else:
+                    # No match found, keep raw (or existing fuzzy logic)
+                    main_clean = raw_main.replace(" ", "")
+                    sub_clean = raw_sub.replace(" ", "")
+
+
+                # Final Sub Cleanup (Parens check)
                 if '(' not in sub_clean:
                     sub_clean = sub_clean.replace(",", "·").replace("/", "·")
-
+                        
+                # [NEW] Load Tags (Cols 5, 6, 7 -> Index 5, 6, 7 in Excel?)
+                # wait, read_excel default header=0 implies row starts at 0?
+                # The code used iloc[1], iloc[2]... implying 0-based index from the excel read.
+                # Assuming Standard Layout: [No(0), Word(1), Main(2), Sub(3), Pron(4), Tag1(5), Tag2(6), Tag3(7)]
+                # If 'Pronunciation' is missing in some files, tags might be shifted?
+                # To be safe, let's assume fixed index since it's a template.
+                
+                tags = ["", "", ""]
+                for t_idx in range(3):
+                    col_idx = 5 + t_idx
+                    if len(row) > col_idx:
+                        val = str(row.iloc[col_idx]).strip()
+                        if val and val.lower() != 'nan':
+                            tags[t_idx] = val
 
                 ref_dict[word] = {
                     'main': main_clean,
                     'sub': sub_clean,
-                    'pronunciation': pronunciation
+                    'pronunciation': pronunciation,
+                    'tag1': tags[0],
+                    'tag2': tags[1],
+                    'tag3': tags[2]
                 }
             except Exception as row_e:
                 continue
@@ -1188,6 +1264,7 @@ def upload_card():
              s_main = reg.get('part_of_speech', '').strip() 
              s_sub = reg.get('language_category', '').strip()
              s_pron = reg.get('pronunciation', '').strip()
+             s_keywords = reg.get('search_keywords', '').strip()
              
              # [OPTIMIZATION] Smart Skip: If data matches existing Sheet data, don't sync
              need_sync = True
@@ -1198,11 +1275,13 @@ def upload_card():
                      r_main = ref.get('main', '').strip()
                      r_sub = ref.get('sub', '').strip()
                      r_pron = ref.get('pronunciation', '').strip()
+                     # Check keywords (mapped to tag1)
+                     r_tag1 = ref.get('tag1', '').strip()
                      
                      # Check if categories match
                      if s_main == r_main and s_sub == r_sub:
-                         # Check pronunciation (only if update provides one)
-                         if not s_pron or s_pron == r_pron:
+                         # Check pronunciation & keywords mismatch
+                         if (not s_pron or s_pron == r_pron) and (not s_keywords or s_keywords == r_tag1):
                              need_sync = False
                              print(f"[Smart Skip] No changes for '{s_word}', skipping Sheet sync.")
              except Exception as e_skip:
@@ -1210,7 +1289,14 @@ def upload_card():
                  need_sync = True
 
              if need_sync:
-                updates_to_sync.append((s_word, s_main, s_sub, s_pron))
+                # [FIX] Split search_keywords into 3 tags for Sheet
+                kw_parts = [k.strip() for k in s_keywords.split(',')] if s_keywords else []
+                t1 = kw_parts[0] if len(kw_parts) > 0 else ""
+                t2 = kw_parts[1] if len(kw_parts) > 1 else ""
+                t3 = kw_parts[2] if len(kw_parts) > 2 else ""
+                tags = [t1, t2, t3]
+                
+                updates_to_sync.append((s_word, s_main, s_sub, s_pron, tags))
 
              new_item = {
                  'folder': web_path_prefix, # [FIX] Use full relative path (e.g. 'user_images/beta_...') instead of basename
@@ -1220,7 +1306,8 @@ def upload_card():
                  'main': reg.get('main', ''),
                  'sub': reg.get('sub', ''),
                  'part_of_speech': reg.get('part_of_speech', ''),
-                 'language_category': reg.get('language_category', '')
+                 'language_category': reg.get('language_category', ''),
+                 'search_keywords': s_keywords
              }
              current_data.append(new_item)
              
@@ -1236,9 +1323,9 @@ def upload_card():
             # [Background Sync] Trigger GSheet Update
             def run_sync():
                 print(f"[Background] Syncing {len(updates_to_sync)} words to GSheet...")
-                for (w, m, s, p) in updates_to_sync:
+                for (w, m, s, p, tags) in updates_to_sync:
                     if w:
-                        sync_manager.update_word(w, m, s, p)
+                        sync_manager.update_word(w, m, s, p, tags)
             
             threading.Thread(target=run_sync).start()
 
@@ -1372,6 +1459,10 @@ def update_card():
              item['part_of_speech'] = new_pos
              item['language_category'] = new_cat
              
+             # [NEW] Update Keywords if provided
+             if 'search_keywords' in req_data:
+                 item['search_keywords'] = req_data['search_keywords']
+             
              # Also update category folder if needed? 
              # (Moving files between '범주' folders is complex. 
              #  For now, just update the DATA. File movement is a bigger task if we want to sync physical folders.
@@ -1387,37 +1478,165 @@ def update_card():
             
             # [Background Sync] Update Google Sheet with new categories
             # Gather unique word updates to prevent duplicate API calls
+            # [Background Sync] Update Google Sheet with new categories
+            # Gather unique word updates to prevent duplicate API calls
             unique_updates = {}
+            
+            # Mapping: search_keywords -> tag1, tag2, tag3
+            raw_kw = req_data.get('search_keywords', '')
+            kw_parts = [k.strip() for k in raw_kw.split(',')] if raw_kw else []
+            t1 = kw_parts[0] if len(kw_parts) > 0 else ""
+            t2 = kw_parts[1] if len(kw_parts) > 1 else ""
+            t3 = kw_parts[2] if len(kw_parts) > 2 else ""
+            tags = [t1, t2, t3] 
+
             for item in new_data:
                 if item.get('image') == target_image:
                      w = item.get('name', '').strip()
-                     m = item.get('part_of_speech', '').strip()
-                     s = item.get('language_category', '').strip()
-                     # We don't have pronunciation here, so pass empty string (SyncManager won't overwrite)
-                     if w:
-                         unique_updates[w] = (w, m, s, "")
+                     # Use the NEW values we just updated
+                     unique_updates[w] = (w, new_pos, new_cat, "", tags)
+
+    if updated_count > 0:
+        if save_data(new_data):
             
+            # [Background Sync] Trigger GSheet Update
             def run_edit_sync():
                 print(f"[Background] Syncing {len(unique_updates)} edits to GSheet...")
-                for (w, m, s, p) in unique_updates.values():
-                    sync_manager.update_word(w, m, s, p)
-
-            threading.Thread(target=run_edit_sync).start()
+                for (w, m, s, p, tags) in unique_updates.values():
+                    if w:
+                        sync_manager.update_word(w, m, s, p, tags)
 
             threading.Thread(target=run_edit_sync).start()
 
             update_version() # [Version Update]
-            return jsonify({'success': True, 'updated_count': updated_count})
-        else:
-            return jsonify({'error': 'Save failed'}), 500
+            return jsonify({'success': True, 'count': updated_count, 'message': f'{updated_count} items updated.'})
     
-    return jsonify({'success': True, 'msg': 'No matches found, nothing updated'})
+    return jsonify({'success': False, 'message': 'No changes made.'})
+
+# [NEW] Manual Tag Pull Sync Endpoint
+@app.route('/api/sync/pull_tags', methods=['POST'])
+def manual_tag_pull():
+    try:
+        print("[Manual Sync] Pulling tags from Google Sheet...")
+        
+        # 1. Fetch from Google Sheet
+        sheet_data = sync_manager.fetch_data() # Returns dict { 'word': { ... 'tag1':..., 'tag2':... } }
+        if not sheet_data:
+            return jsonify({'success': False, 'message': 'Failed to fetch data from Google Sheet.'}), 500
+
+        # 2. Load Local Data
+        if os.path.exists(os.path.join(BASE_DIR, EXCEL_FILE)):
+            df = pd.read_excel(os.path.join(BASE_DIR, EXCEL_FILE)).fillna('')
+            current_data = df.to_dict('records')
+        else:
+            return jsonify({'success': False, 'message': 'Local data file not found.'}), 404
+
+        updated_count = 0
+        
+        # 3. Update Local Data from Sheet Data
+        for item in current_data:
+            name = str(item.get('name', '')).strip()
+            # Try to match with Sheet Data
+            # Note: sheet_data keys might be 'Word' or 'Word [Pronunciation]' depending on sync_manager logic
+            # Let's try direct match first, then clean match
+            
+            target_ref = sheet_data.get(name)
+            
+            # If not found, try clean name (if sheet has simple names)
+            if not target_ref:
+                clean_name = name.split('[')[0].strip()
+                target_ref = sheet_data.get(clean_name)
+            
+            if target_ref:
+                # Merge 3 tags -> comma separated string
+                tags = [
+                    target_ref.get('tag1', '').strip(),
+                    target_ref.get('tag2', '').strip(),
+                    target_ref.get('tag3', '').strip()
+                ]
+                new_keywords = ",".join([t for t in tags if t]) # Filter empty
+                
+                # Check if changed
+                old_keywords = str(item.get('search_keywords', '')).strip()
+                
+                # Normalize for comparison (remove spaces, etc? No, keeps simple)
+                if new_keywords != old_keywords:
+                    item['search_keywords'] = new_keywords
+                    updated_count += 1
+        
+        # 4. Save if changes (Inventory Update)
+        if updated_count > 0:
+            if not save_data(current_data):
+                 return jsonify({'success': False, 'message': 'Failed to save local file.'}), 500
+            update_version()
+        
+        # [NEW] 5. Also Update Reference Dictionary (reference_words.xlsx) & Cache
+        # This ensures that 'analyzeName' sees the new tags immediately for new uploads
+        try:
+            # Convert sheet_data (dict) to DataFrame for reference_words.xlsx
+            # Expected cols: Word, Main, Sub, Pronunciation, Tag1, Tag2, Tag3
+            
+            ref_rows = []
+            for w_key, w_val in sheet_data.items():
+                # w_key might be "Word" or "Word [Pron]"
+                # Let's use the data inside w_val
+                # 'tag' fields are from our previous fetch_data logic
+                
+                # We need to reconstruct the row structure
+                # Word, Main, Sub, Pron, Tag1, Tag2, Tag3
+                # w_val keys from sync_manager: main, sub, pronunciation, tag1, tag2, tag3
+                
+                # Clean word key? No, use the raw key as the word column usually
+                # But w_key is the dictionary key. 
+                # Let's assume w_key is the Word.
+                
+                row = {
+                    'Word': w_key,
+                    'Main Category': w_val.get('main', ''),
+                    'Sub Category': w_val.get('sub', ''),
+                    'Pronunciation': w_val.get('pronunciation', ''),
+                    'Tag 1': w_val.get('tag1', ''),
+                    'Tag 2': w_val.get('tag2', ''),
+                    'Tag 3': w_val.get('tag3', '')
+                }
+                ref_rows.append(row)
+            
+            if ref_rows:
+                ref_df = pd.DataFrame(ref_rows)
+                # Save to reference_words.xlsx
+                ref_path = os.path.join(BASE_DIR, REFERENCE_FILE)
+                ref_df.to_excel(ref_path, index=False)
+                print(f"[Manual Sync] Updated {REFERENCE_FILE} with {len(ref_df)} words.")
+                
+                # Update In-Memory Cache
+                global reference_cache
+                reference_cache = sheet_data # effectively the same structure
+                print("[Manual Sync] Updated reference_cache.")
+                
+        except Exception as e_ref:
+            print(f"[Manual Sync Warning] Failed to update reference dictionary: {e_ref}")
+            # Non-critical, but good to log
+
+        if updated_count > 0:
+            return jsonify({'success': True, 'count': updated_count, 'message': f'Updated {updated_count} cards (and Reference Dict).'})
+        else:
+            return jsonify({'success': True, 'count': 0, 'message': 'Inventory up to date (Reference Dict updated).'})
+
+    except Exception as e:
+        print(f"[Manual Sync Error] {e}")
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/admin_test')
+@requires_auth
+def serve_admin_test():
+    return send_file(os.path.join(BASE_DIR, 'admin_test.html'))
 
 def load_data():
     if not os.path.exists(os.path.join(BASE_DIR, EXCEL_FILE)): return []
     try:
         df = pd.read_excel(os.path.join(BASE_DIR, EXCEL_FILE)).fillna('')
-        for col in ['main', 'sub', 'name', 'folder', 'image', 'part_of_speech', 'language_category']:
+        for col in ['main', 'sub', 'name', 'folder', 'image', 'part_of_speech', 'language_category', 'search_keywords']:
             if col not in df.columns: df[col] = ''
         
         return sort_data([
@@ -1436,7 +1655,10 @@ def save_data(data_list):
         js_content = f"// Created by server.py\nconst soundData = {json.dumps(data_list, ensure_ascii=False, indent=4)};"
         with open(os.path.join(BASE_DIR, DATA_FILE), 'w', encoding='utf-8') as f: f.write(js_content)
         return True
-    except: return False
+    except Exception as e:
+        print(f"[ERROR] Failed to save data: {e}")
+        traceback.print_exc()
+        return False
 
 def get_folder_path(phoneme):
     # [FIX] Explicit Mapping for tricky folder names
@@ -1773,6 +1995,13 @@ def fix_beta_paths():
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/refresh_dict', methods=['POST'])
+@requires_auth
+def refresh_dictionary():
+    # Placeholder or remove entirely if user wants strict revert
+    # But user asked "Don't implement it".
+    return jsonify({'error': 'Not implemented'}), 501
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

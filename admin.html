@@ -24,6 +24,10 @@
                     target="_blank" class="header-btn" style="background: #2E7D32;" title="구글 스프레드시트 열기">
                     <span>📊 사전 보기</span>
                 </a>
+                <button onclick="manualTagPull()" class="header-btn"
+                    style="background: #e65100; border:none; cursor:pointer;" title="구글 시트의 태그 정보를 가져와서 덮어씁니다.">
+                    <span>🔄 태그 동기화</span>
+                </button>
             </div>
 
             <h1 style="margin: 0;">🎛️ 자판기 관리자 페이지 <span style="font-size:0.6em; color:#888;">v1.1</span></h1>
@@ -80,6 +84,9 @@
                                     style="flex: 1; padding: 6px 10px; font-size: 1rem; border: 2px solid #90caf9; border-radius: 4px; background-color: #e3f2fd;"
                                     placeholder="자동 분석된 이름" oninput="window.isRenaming = true"
                                     onkeydown="if(event.key === 'Enter') confirmInterceptorName()">
+                            </div>
+
+                            <div style="text-align: right; margin-top: 8px;">
                                 <button class="btn btn-sm btn-primary" onclick="confirmInterceptorName()"
                                     style="padding: 4px 10px;">확인</button>
                             </div>
@@ -89,7 +96,21 @@
                                 style="color:#e65100; font-weight:bold; font-size: 0.9em; margin-left: 5px;"></span></label>
                         <input type="text" id="input-display-name" placeholder="예: 하마 [하마] (비워두면 자동 분석 이름 사용)"
                             style="width:100%; padding:12px; font-size:1.1rem; border:1px solid #ddd; border-radius:5px; box-sizing: border-box;">
-                        <p style="margin:5px 0 0 0; font-size:0.8rem; color:#888;">* 자동 분석 후 수정이 필요하면 여기에 입력하세요.</p>
+                        <p style="margin:5px 0 10px 0; font-size:0.8rem; color:#888;">* 자동 분석 후 수정이 필요하면 여기에 입력하세요.</p>
+
+                        <!-- [MOVED] Search Tags Input (3 Fields) -->
+                        <div style="margin-bottom:5px;">
+                            <label style="font-weight:bold; color:#333; margin-bottom:8px; display:block;">검색어 태그 (최대
+                                3개)</label>
+                            <div style="display:flex; gap:5px;">
+                                <input type="text" id="input-tag1" placeholder="태그 1"
+                                    style="flex:1; padding:12px; font-size:1rem; border:1px solid #ddd; border-radius:5px; box-sizing: border-box;">
+                                <input type="text" id="input-tag2" placeholder="태그 2"
+                                    style="flex:1; padding:12px; font-size:1rem; border:1px solid #ddd; border-radius:5px; box-sizing: border-box;">
+                                <input type="text" id="input-tag3" placeholder="태그 3"
+                                    style="flex:1; padding:12px; font-size:1rem; border:1px solid #ddd; border-radius:5px; box-sizing: border-box;">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -126,7 +147,7 @@
                         </div>
 
                         <!-- Inputs -->
-                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <div style="display:flex; gap:10px; margin-bottom:10px;">
                             <div style="flex:1;">
                                 <label style="color:#1b5e20; font-size:0.8rem;">단어 이름</label>
                                 <input type="text" id="input-name" placeholder="예: 책상"
@@ -141,6 +162,7 @@
                                     onkeydown="if(event.key==='Enter' && window.analyzeName) analyzeName()">
                             </div>
                         </div>
+
 
                         <!-- Content Area (Expandable) -->
                         <div id="suggestion-area"
@@ -299,6 +321,19 @@
                     <option value="서술/개념">서술/개념</option>
                 </select>
             </div>
+            <!-- [NEW] Edit Tags (3 Fields) -->
+            <div class="form-group">
+                <label>검색어 태그 (최대 3개)</label>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="edit-tag1" placeholder="태그1 (기본형)"
+                        style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px; box-sizing: border-box;">
+                    <input type="text" id="edit-tag2" placeholder="태그2"
+                        style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px; box-sizing: border-box;">
+                    <input type="text" id="edit-tag3" placeholder="태그3"
+                        style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px; box-sizing: border-box;">
+                </div>
+                <p style="margin: 3px 0 0 0; font-size: 0.8rem; color: #888;">* 쉼표 없이 각각 입력해주세요.</p>
+            </div>
             <div class="form-group">
                 <label>세부 카테고리</label>
                 <select id="edit-category"></select>
@@ -340,7 +375,32 @@
     <script src="js/admin/admin_util.js"></script>
     <script src="js/admin/admin_api.js"></script>
     <script src="js/admin/admin_ui.js?v=20260201_1615"></script>
-    <script src="js/admin/admin_upload.js?v=20260201_1615"></script>
+    <script>
+        async function manualTagPull() {
+            if (!confirm("구글 스프레드시트의 '태그' 정보를 가져와서 현재 자판기에 덮어쓰시겠습니까?\n(파일이 많으면 몇 초 정도 걸릴 수 있습니다.)")) return;
+
+            // 1. Show Loading Overlay
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.display = 'flex';
+
+            try {
+                const res = await fetch('/api/sync/pull_tags', { method: 'POST' });
+                const data = await res.json();
+
+                if (data.success) {
+                    alert(`✅ 동기화 완료!\n\n${data.message}\n페이지를 새로고침합니다.`);
+                    location.reload();
+                } else {
+                    alert(`❌ 동기화 실패: ${data.message}`);
+                }
+            } catch (e) {
+                alert(`❌ 오류 발생: ${e.message}`);
+            } finally {
+                overlay.style.display = 'none';
+            }
+        }
+    </script>
+    <script src="js/logic_upload.js?v=20260201_1615"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             console.log("🚀 Admin Page Initializing...");

@@ -118,7 +118,12 @@ function renderGrid() {
                 const cardName = (c.name || '').normalize('NFC');
                 const textMatch = normalizeForSearch(cardName).includes(search);
                 const mixedMatch = normalizeForSearch(c._mixed || '').includes(search);
-                matchS = textMatch || mixedMatch;
+
+                // [NEW] Check Search Keywords
+                const keywords = (c.search_keywords || '').normalize('NFC');
+                const keywordMatch = normalizeForSearch(keywords).includes(search);
+
+                matchS = textMatch || mixedMatch || keywordMatch;
             }
         }
 
@@ -449,6 +454,12 @@ function openEditModal(card) {
     setVal('edit-part-speech', pVal);
 
     updateEditCategoryOptions(card.language_category);
+
+    // [NEW] Populate Keywords (Split to 3 tags)
+    const keywords = (card.search_keywords || "").split(',').map(s => s.trim());
+    setVal('edit-tag1', keywords[0]);
+    setVal('edit-tag2', keywords[1]);
+    setVal('edit-tag3', keywords[2]);
 }
 
 function closeModal() {
@@ -471,7 +482,13 @@ async function saveEdit() {
         main: null,
         sub: null,
         part_of_speech: document.getElementById('edit-part-speech').value,
-        language_category: document.getElementById('edit-category').value
+        language_category: document.getElementById('edit-category').value,
+        // [NEW] Join Keywords
+        search_keywords: [
+            document.getElementById('edit-tag1').value.trim(),
+            document.getElementById('edit-tag2').value.trim(),
+            document.getElementById('edit-tag3').value.trim()
+        ].filter(Boolean).join(',')
     };
 
     try {

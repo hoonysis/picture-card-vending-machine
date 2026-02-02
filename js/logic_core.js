@@ -743,7 +743,11 @@ window.renderCards = function () {
                 const textMatch = normalizeForSearch(cardName).includes(searchVal);
                 const mixedMatch = normalizeForSearch(card._mixed || '').includes(searchVal);
 
-                return textMatch || mixedMatch;
+                // [NEW] Keyword Search
+                const keywords = (card.search_keywords || '').normalize('NFC');
+                const keywordMatch = normalizeForSearch(keywords).includes(searchVal);
+
+                return textMatch || mixedMatch || keywordMatch;
             }
             return true;
         });
@@ -823,7 +827,11 @@ window.renderCards = function () {
                 const textMatch = normalizeForSearch(cardName).includes(searchVal);
                 const mixedMatch = normalizeForSearch(card._mixed || '').includes(searchVal);
 
-                return textMatch || mixedMatch;
+                // [NEW] Keyword Search
+                const keywords = (card.search_keywords || '').normalize('NFC');
+                const keywordMatch = normalizeForSearch(keywords).includes(searchVal);
+
+                return textMatch || mixedMatch || keywordMatch;
             }
             return true;
         });
