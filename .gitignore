@@ -61,7 +61,7 @@ generate_*.py
 process_image.py
 project_backup.py
 brain_manager.py
-sync_manager.py
+
 rename_subcat.py
 reproduce_issue.py
 restore_*.py
