@@ -930,9 +930,14 @@ def load_reference_dict():
                 # [CHANGED] Strict Matching Logic (User Request)
                 # No more fuzzy mapping. User guarantees Sheet text matches Admin UI text.
                 # Use minimal normalization: Remove spaces, standardize separators.
+                import unicodedata
 
                 def normalize_category(txt):
                     if not txt or txt.lower() == 'nan': return ""
+                    # 0. NFC Normalization (Critical for Server/Linux compatibility)
+                    # Ensures 'ㅎ+ㅏ+ㄴ' (NFD) becomes '한' (NFC)
+                    txt = unicodedata.normalize('NFC', txt)
+                    
                     # 1. Remove spaces
                     clean = txt.replace(" ", "")
                     # 2. Standardize Separators: "/" or "," -> "·" (Admin UI Standard)
@@ -987,7 +992,8 @@ def load_reference_dict():
                     if len(row) > col_idx:
                         val = str(row.iloc[col_idx]).strip()
                         if val and val.lower() != 'nan':
-                            tags[t_idx] = val
+                            # NFC Normalization for tags too
+                            tags[t_idx] = unicodedata.normalize('NFC', val)
 
                 ref_dict[word] = {
                     'main': main_clean,

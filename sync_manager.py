@@ -113,9 +113,13 @@ class SyncManager:
                 
                 # [CHANGED] Strict Matching Logic (User Request)
                 # No more fuzzy mapping. User guarantees Sheet text matches Admin UI text.
+                import unicodedata
 
                 def normalize_category(txt):
                     if not txt or txt.lower() == 'nan': return ""
+                    # 0. NFC Normalization (Critical for Server/Linux compatibility)
+                    txt = unicodedata.normalize('NFC', txt)
+                    
                     # 1. Remove spaces
                     clean = txt.replace(" ", "")
                     # 2. Standardize Separators will be handled below
@@ -134,6 +138,12 @@ class SyncManager:
                 # Final Sub Cleanup (Parens check - legacy)
                 if '(' not in sub_clean:
                     sub_clean = sub_clean.replace(",", "·").replace("/", "·")
+                
+                # Also normalize key and tags
+                clean_key = unicodedata.normalize('NFC', clean_key)
+                # (Tags are part of data_entry, should we normalize them?)
+                # Yes, let's normalize everything for safety.
+
                 if '(' not in sub_clean:
                     sub_clean = sub_clean.replace(",", "·").replace("/", "·")
 
