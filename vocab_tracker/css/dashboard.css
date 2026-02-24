@@ -1,0 +1,368 @@
+/* ==========================================================================
+   Dashboard UI (dashboard.css)
+   넷플릭스 스타일 대문 페이지 뷰레이아웃, 아동 프로필 타일, 모달 디자인
+   ========================================================================== */
+
+#dashboard-view {
+    width: 100%;
+    min-height: calc(100vh - 80px);
+    /* 헤더 영역 제외 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    box-sizing: border-box;
+    background: #f8f9fa;
+    /* 단어장과 다른 깔끔한 배경색 */
+}
+
+.dashboard-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+/* 프로필 타일 컨테이너 */
+.profile-grid {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 900px;
+}
+
+/* 개별 프로필 타일 */
+.profile-card {
+    position: relative;
+    /* 케밥 메뉴(점 3개) 절대 위치 기준점 */
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s;
+}
+
+.profile-card:hover {
+    transform: scale(1.05);
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-align: center;
+    word-break: keep-all;
+    line-height: 1.2;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+/* 남아 (파란색 테마) */
+.profile-card.male .profile-avatar {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.profile-card.male:hover .profile-avatar {
+    border-color: #2196f3;
+    transform: translateY(-5px);
+}
+
+/* 여아 (빨간/핑크색 테마) */
+.profile-card.female .profile-avatar {
+    background: #fce4ec;
+    color: #c2185b;
+}
+
+.profile-card.female:hover .profile-avatar {
+    border-color: #e91e63;
+    transform: translateY(-5px);
+}
+
+
+
+.profile-meta {
+    font-size: 0.9rem;
+    color: #777;
+    background: #eee;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+/* '새 아이 추가' 타일 특화 */
+.profile-card.add-new .profile-avatar {
+    background: #fff;
+    color: #bbb;
+    border: 2px dashed #ccc;
+    box-shadow: none;
+}
+
+.profile-card.add-new:hover .profile-avatar {
+    border-color: #2196f3;
+    color: #2196f3;
+    background: #fdfdfd;
+}
+
+/* ==========================================================================
+   케밥 메뉴 (점 3개) 및 프로필 옵션 팝업
+   ========================================================================== */
+.btn-kebab {
+    position: absolute;
+    top: -5px;
+    right: 5px;
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #777;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.btn-kebab:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+/* '새 아이 추가' 타일엔 점 3개 숨김 */
+.profile-card.add-new .btn-kebab {
+    display: none;
+}
+
+/* 드롭다운 옵션 메뉴 */
+.profile-options {
+    position: absolute;
+    top: 25px;
+    right: 5px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid #eee;
+    width: 100px;
+    display: none;
+    /* JS로 제어 */
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 20;
+}
+
+.profile-options.show {
+    display: flex;
+    animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.option-btn {
+    padding: 10px 15px;
+    text-align: left;
+    background: none;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #444;
+    transition: background 0.2s;
+}
+
+.option-btn:hover {
+    background: #f5f5f5;
+}
+
+.option-btn.delete {
+    color: #e53935;
+}
+
+.option-btn.delete:hover {
+    background: #ffebee;
+}
+
+/* ==========================================================================
+   Modals (팝업 창)
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    /* JS로 제어 */
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 450px;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #999;
+    cursor: pointer;
+}
+
+.btn-close:hover {
+    color: #333;
+}
+
+/* 폼 요소 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: #2196f3;
+    outline: none;
+}
+
+/* 연/월/일 드롭다운 그룹 */
+.date-group {
+    display: flex;
+    gap: 10px;
+}
+
+.date-group select {
+    flex: 1;
+    /* 동일 비율 차지 */
+    padding: 12px 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+/* 성별 선택 토글 */
+.gender-toggle {
+    display: flex;
+    gap: 10px;
+}
+
+.gender-btn {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+    color: #555;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.gender-btn.active.male {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    color: #1976d2;
+}
+
+.gender-btn.active.female {
+    background: #fce4ec;
+    border-color: #e91e63;
+    color: #c2185b;
+}
+
+/* 하단 버튼 */
+.btn-submit {
+    width: 100%;
+    padding: 15px;
+    background: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.2s;
+}
+
+.btn-submit:hover {
+    background: #1976d2;
+}

@@ -1,0 +1,54 @@
+/* === Basket Item Hover Help Tooltip === */
+
+/* Only target cards inside the basket grid */
+#basket-grid .card.in-basket:hover::after {
+    content: "🖱️좌:선택 🖱️우:메뉴";
+    position: absolute;
+    top: -25px;
+    /* Position above the card */
+    left: 50%;
+    transform: translateX(-50%);
+
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+
+    font-size: 0.75rem;
+    font-weight: bold;
+    white-space: nowrap;
+
+    pointer-events: none;
+    /* Ignore clicks */
+    z-index: 1000;
+
+    opacity: 0;
+    animation: fadeInTooltip 0.2s forwards;
+    animation-delay: 0.3s;
+    /* Slight delay */
+}
+
+/* Small triangle arrow at the bottom of the tooltip */
+#basket-grid .card.in-basket:hover::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    /* Just below the tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+
+    opacity: 0;
+    animation: fadeInTooltip 0.2s forwards;
+    animation-delay: 0.3s;
+    z-index: 1000;
+}
+
+@keyframes fadeInTooltip {
+    to {
+        opacity: 1;
+    }
+}

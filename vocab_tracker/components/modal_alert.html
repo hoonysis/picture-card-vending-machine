@@ -1,0 +1,16 @@
+<!-- ==========================================
+         일반 알림 팝업 (Custom Alert Modal)
+         ========================================== -->
+<div id="alertModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 15px;">ℹ️</div>
+        <h2 id="alertTitle" style="font-size: 1.4rem; color: #333; margin-bottom: 10px;">알림</h2>
+        <p id="alertMessage" style="color: #666; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.5;">
+            <!-- JS에서 메시지 주입 -->
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button onclick="closeAlertModal()"
+                style="padding: 12px 20px; border: none; background: #1976d2; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: background 0.2s;">확인</button>
+        </div>
+    </div>
+</div>

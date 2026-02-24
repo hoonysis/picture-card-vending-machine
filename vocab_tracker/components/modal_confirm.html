@@ -1,0 +1,18 @@
+<!-- ==========================================
+         삭제 확인 경고 팝업 (Custom Confirm Modal)
+         ========================================== -->
+<div id="confirmModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 15px;">🗑️</div>
+        <h2 style="font-size: 1.4rem; color: #333; margin-bottom: 10px;">정말 삭제하시겠습니까?</h2>
+        <p id="confirmMessage" style="color: #666; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.5;">
+            <!-- JS에서 메시지 주입 -->
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button onclick="closeConfirmModal()"
+                style="padding: 12px 20px; border: none; background: #eee; color: #555; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: background 0.2s;">취소</button>
+            <button id="btnConfirmDelete" onclick="executeConfirmAction()"
+                style="padding: 12px 20px; border: none; background: #e53935; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: background 0.2s;">확인</button>
+        </div>
+    </div>
+</div>

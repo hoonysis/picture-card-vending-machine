@@ -1,0 +1,125 @@
+/* ==========================================================================
+   Card Styles (card.css)
+   메인 콘텐츠 영역의 단어 카드 렌더링, 그리드 레이아웃, 체크박스 디자인
+   ========================================================================== */
+
+.priority-section {
+    margin-bottom: 30px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f0f0f0;
+}
+
+.category-group {
+    margin-bottom: 25px;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 20px;
+}
+
+.category-group:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.category-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.card-grid {
+    display: grid;
+    /* 기존 minmax 160px -> 110px (관리자 목록 크기) -> 80px */
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px;
+}
+
+.tracker-card {
+    position: relative;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid #eee;
+}
+
+.tracker-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* 우측 상단 - 인쇄 장바구니 체크박스 (Print Cart) */
+.print-checkbox {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    z-index: 10;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.print-checkbox:hover {
+    border-color: #4CAF50;
+}
+
+.tracker-card.in-cart {
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px #4CAF50 inset;
+}
+
+.tracker-card.in-cart .print-checkbox {
+    background: #4CAF50;
+    border-color: #4CAF50;
+    color: white;
+}
+
+.print-checkbox svg {
+    width: 12px;
+    height: 12px;
+    max-width: 12px;
+    max-height: 12px;
+    display: none;
+    pointer-events: none;
+    /* 클릭 이벤트 방해 방지 */
+}
+
+.tracker-card.in-cart .print-checkbox svg {
+    display: block;
+}
+
+.card-image {
+    width: 100%;
+    height: 80px;
+    /* 기존 160px -> 110px -> 80px */
+    object-fit: cover;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+}
+
+.card-name {
+    padding: 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    /* 기존 16px -> 14px */
+    color: #333;
+    background: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

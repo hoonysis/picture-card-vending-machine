@@ -1,0 +1,12 @@
+/* Context Menu Header */
+.ctx-header {
+    padding: 8px 12px;
+    font-weight: bold;
+    color: #E65100;
+    /* Darker Orange */
+    background-color: #FFF3E0;
+    /* Light Orange Background */
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    cursor: default;
+}

@@ -1,0 +1,30 @@
+<!-- ==========================================
+         타겟 추출 완료 팝업 (Extraction Modal)
+         ========================================== -->
+<div id="extractionModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 600px; text-align: center; padding: 40px;">
+        <div style="font-size: 3.5rem; margin-bottom: 10px;">🎯</div>
+        <h2 style="font-size: 1.6rem; color: #1976d2; margin-bottom: 10px;">이번 주 타겟 어휘 추출 추천!</h2>
+        <p style="color: #555; line-height: 1.6; margin-bottom: 20px;">
+            우리아이의 자발화 수준을 반영하여 일상에서 시급한 <strong>1순위(생존/요구), 2순위(고빈도 일상), 3순위(개념/자발화 동기 낮음)</strong> 순으로 10개의 어휘를
+            똑똑하게 자동 추출했습니다.
+        </p>
+
+        <div id="extractedWordsContainer"
+            style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom: 30px; background: #f8f9fa; padding: 20px; border-radius: 10px; border: 1px dashed #ccc;">
+            <!-- JS에 의해 어휘 칩들이 들어옴 -->
+        </div>
+
+        <h3 style="font-size: 1.1rem; color: #d32f2f; margin-bottom: 25px;">"딱 이 10장만 먼저 인쇄해서 가이드대로 훈련하세요!"</h3>
+
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button onclick="closeExtractionModal()"
+                style="padding: 14px 25px; border: none; background: #eee; color: #333; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 15px;">나중에
+                하기</button>
+            <button
+                style="padding: 14px 35px; border: none; background: #e91e63; color: white; border-radius: 30px; font-weight: bold; cursor: pointer; display:flex; align-items:center; gap:8px; font-size: 16px; box-shadow: 0 4px 12px rgba(233, 30, 99, 0.4);">
+                🖨️ 인쇄 기능으로 넘어가기
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,195 @@
+@charset "UTF-8";
+
+/* === Basket Section === */
+.basket-section {
+    background-color: #fff;
+    border: 3px dashed #4CAF50;
+    border-radius: 15px;
+    padding: 20px;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    scroll-margin-top: 150px;
+    position: relative;
+}
+
+.basket-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    color: #2e7d32;
+    font-weight: bold;
+    margin-bottom: 10px;
+    user-select: none;
+}
+
+.basket-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.clear-all-btn {
+    background: #ff5252;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+.clear-all-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+}
+
+#basket-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 10px;
+    padding-bottom: 20px;
+    flex: 1;
+    align-content: flex-start;
+    min-height: 200px;
+    position: relative;
+}
+
+.empty-msg {
+    width: 100%;
+    text-align: center;
+    color: #aaa;
+    margin-top: 20px;
+    font-size: 1rem;
+}
+
+.basket-placeholder {
+    width: 80px;
+    aspect-ratio: 1/1.1;
+    background-color: #E8F5E9;
+    border: 2px dashed #4CAF50;
+    border-radius: 10px;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+/* Undo/Redo */
+.undo-redo-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.undo-redo-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border: 1.5px solid #ccc;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.undo-redo-btn:hover:not(:disabled) {
+    background-color: #f0f0f0;
+    border-color: #999;
+    color: #333;
+    transform: scale(1.05);
+}
+
+.undo-redo-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.undo-redo-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* === Print Controls === */
+.print-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: #f1f3f5;
+    padding: 10px;
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+.print-btn {
+    border: 1px solid #555;
+    background: white;
+    padding: 5px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.print-btn.active {
+    background: #333;
+    color: white;
+}
+
+.print-main-btn {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.print-layout-select {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    color: #333;
+    background-color: white;
+    cursor: pointer;
+    outline: none;
+    min-width: 140px;
+}
+
+.print-layout-select:focus {
+    border-color: #2196F3;
+}
+
+@media print {
+    .print-layout-select {
+        display: none !important;
+    }
+}
+
+/* Add All Button (Often near basket functionality visually or logically) */
+.add-all-btn {
+    padding: 8px 15px;
+    background: #9C27B0;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+}
+
+.add-all-btn:hover {
+    background: #7B1FA2;
+    transform: translateY(-1px);
+}

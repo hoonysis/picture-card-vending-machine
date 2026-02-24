@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>말 늦은 아이를 위한 말 트이기 프로그램</title>
+    <!-- 독립 모듈화된 CSS -->
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/sidebar.css">
+    <link rel="stylesheet" href="./css/components/card.css">
+    <link rel="stylesheet" href="./css/components/modal.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
+</head>
+
+<body>
+
+    <!-- ==========================================
+         Phase 0. 대문 (Dashboard View)
+         로그인 후 처음 보여지는 환영/프로필 선택 화면
+         ========================================== -->
+    <div id="dashboard-view">
+        <h1 class="dashboard-title">아이를 선택해주세요</h1>
+
+        <!-- 아동 프로필 타일들이 JS(dashboard.js)에 의해 렌더링될 영역 -->
+        <div class="profile-grid" id="profileGrid">
+            <!-- 동적 주입 됨 -->
+        </div>
+    </div>
+
+    <!-- ==========================================
+         Phase 1. 단어장 앱 코어 (Tracker View) 
+         대문에서 아동을 선택해야만 나타남
+         ========================================== -->
+    <div id="tracker-view" class="app-container" style="display: none;">
+        <header class="app-header-container"
+            style="position: absolute; top:0; left: 0; width: 100%; border-bottom: 1px solid #eaeaea; background: white; z-index: 100;">
+            <div class="app-header" style="max-width: 1200px; justify-content: flex-start; gap: 40px; margin: 0 auto;">
+                <h1 class="title" style="flex-grow: 1;">📉 말 늦은 아이를 위한 말 트이기 프로그램 <span
+                        style="font-size: 14px; color: white; background: #e91e63; padding: 3px 8px; border-radius: 12px;">Pre-Alpha</span>
+                </h1>
+                <div class="header-controls" style="gap: 15px;">
+                    <button class="btn-reset" onclick="resetCurrentTab()"
+                        style="padding: 8px 16px; cursor: pointer; border-radius:8px; border:1px solid #ccc; background:#fff; font-weight:bold; display:flex; align-items:center; gap:6px; font-size: 14px; color: #e53935;">
+                        🔄 현재 탭 초기화</button>
+                    <button onclick="goToDashboard()"
+                        style="padding: 8px 16px; cursor: pointer; border-radius:8px; border:1px solid #ccc; background:#f9f9f9; font-weight:bold; display:flex; align-items:center; gap:6px; font-size: 14px;">🏠
+                        홈</button>
+                    <div
+                        style="font-size: 15px; color: #333; background: #f0f4f8; padding: 8px 18px; border-radius: 20px; font-weight: 600; border: 1px solid #dce4ec;">
+                        👨‍🎓 <span id="currentStudentName" style="color: #1976d2;">선택 안 됨</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <aside class="sidebar" style="margin-top: 80px;">
+            <!-- [Phase 4.5] 신규: 우리 아이 성장 기록 -->
+            <div class="menu-section open">
+                <div class="menu-header open" onclick="toggleMenu(this)">📊 우리 아이 성장 기록</div>
+                <ul class="menu-list">
+                    <li class="menu-item" data-age="발달 체크 및 리포트" onclick="selectTab('발달 체크 및 리포트')">발달 체크 및 리포트</li>
+                    <li class="menu-item" data-age="성장 차트 모아보기" onclick="selectTab('성장 차트 모아보기')">성장 차트 모아보기</li>
+                </ul>
+            </div>
+
+            <!-- 기존: 단어 트이기 -->
+            <div class="menu-section open">
+                <div class="menu-header open" onclick="toggleMenu(this)">📝 단어 트이기</div>
+                <ul class="menu-list">
+                    <li class="menu-item active" data-age="1세 초반" onclick="selectTab('1세 초반')">1세 초반 (12-18개월)</li>
+                    <li class="menu-item" data-age="1세 후반" onclick="selectTab('1세 후반')">1세 후반 (18-24개월)</li>
+                    <li class="menu-item" data-age="2세" onclick="selectTab('2세')">2세 (24-36개월)</li>
+                    <li class="menu-item" data-age="3세" onclick="selectTab('3세')">3세 (36-48개월)</li>
+                    <li class="menu-item" data-age="4세" onclick="selectTab('4세')">4세 (48-60개월)</li>
+                    <li class="menu-item" data-age="5세" onclick="selectTab('5세')">5세 (60-72개월)</li>
+                    <li class="menu-item" data-age="6세" onclick="selectTab('6세')">6세 (72-84개월)</li>
+                </ul>
+            </div>
+            <div class="menu-section open">
+                <div class="menu-header open" onclick="toggleMenu(this)">문장 트이기</div>
+                <ul class="menu-list">
+                    <li class="menu-item" data-age="누가 무엇을 먹어요" onclick="selectTab('누가 무엇을 먹어요')">누가 무엇을 먹어요</li>
+                    <li class="menu-item" data-age="누가 무엇을 마셔요" onclick="selectTab('누가 무엇을 마셔요')">누가 무엇을 마셔요</li>
+                    <li class="menu-item" data-age="누가 무엇을 입어요" onclick="selectTab('누가 무엇을 입어요')">누가 무엇을 입어요</li>
+                    <li class="menu-item" data-age="누가 무엇을 신어요" onclick="selectTab('누가 무엇을 신어요')">누가 무엇을 신어요</li>
+                    <li class="menu-item" data-age="누가 무엇을 봐요" onclick="selectTab('누가 무엇을 봐요')">누가 무엇을 봐요</li>
+                    <li class="menu-item" data-age="누가 무엇을 타요" onclick="selectTab('누가 무엇을 타요')">누가 무엇을 타요</li>
+                    <li class="menu-item" data-age="누가 무엇을 닦아요" onclick="selectTab('누가 무엇을 닦아요')">누가 무엇을 닦아요</li>
+                    <li class="menu-item" data-age="누가 무엇을 그려요" onclick="selectTab('누가 무엇을 그려요')">누가 무엇을 그려요</li>
+                    <li class="menu-item" data-age="누가 무엇을 만들어요" onclick="selectTab('누가 무엇을 만들어요')">누가 무엇을 만들어요</li>
+                    <li class="menu-item" data-age="누가 무엇을 사요" onclick="selectTab('누가 무엇을 사요')">누가 무엇을 사요</li>
+                    <li class="menu-item" data-age="누가 어디에 가요" onclick="selectTab('누가 어디에 가요')">누가 어디에 가요</li>
+                    <li class="menu-item" data-age="누가 어디에서 자요" onclick="selectTab('누가 어디에서 자요')">누가 어디에서 자요</li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="main-wrapper" style="margin-top: 80px;">
+            <main class="content-area" id="main-content" style="position: relative;">
+
+                <!-- 1. 진단 설문 폼 모듈 (최초 단어장 진입 시 보임) -->
+                <div id="assessment-container"
+                    style="display: none; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 50px;">
+                    <div
+                        style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eaeaea;">
+                        <h2 style="font-size: 24px; color: #333; margin-bottom: 10px;">우리 아이 언어 발달 체크리스트</h2>
+                        <p style="color: #666; margin-bottom: 30px; line-height:1.5;">아이의 언어 및 상호작용 수준을 파악하기 위한 간단한
+                            문진표입니다. 현재 <span id="assessmentChildName" style="font-weight:bold; color:#1976d2;"></span>에
+                            해당하는 내용을 솔직하게 체크해 주세요.</p>
+
+                        <div class="survey-form">
+                            <!-- 임시 문항 1 -->
+                            <div style="margin-bottom: 25px;">
+                                <p style="font-weight: 600; margin-bottom: 10px; color:#444;">1. 엄마, 아빠 외에 의미 있는 단어를 10개
+                                    이상 말하나요?</p>
+                                <label style="margin-right: 15px;"><input type="radio" name="q1" value="yes"> 예</label>
+                                <label style="margin-right: 15px;"><input type="radio" name="q1" value="sometimes">
+                                    가끔</label>
+                                <label><input type="radio" name="q1" value="no"> 아니오</label>
+                            </div>
+                            <!-- 임시 문항 2 -->
+                            <div style="margin-bottom: 25px;">
+                                <p style="font-weight: 600; margin-bottom: 10px; color:#444;">2. 두 단어(예: 엄마 물, 아빠 가)를
+                                    연결해서 말하나요?</p>
+                                <label style="margin-right: 15px;"><input type="radio" name="q2" value="yes"> 예</label>
+                                <label style="margin-right: 15px;"><input type="radio" name="q2" value="sometimes">
+                                    가끔</label>
+                                <label><input type="radio" name="q2" value="no"> 아니오</label>
+                            </div>
+                            <!-- 임시 문항 3 -->
+                            <div style="margin-bottom: 30px;">
+                                <p style="font-weight: 600; margin-bottom: 10px; color:#444;">3. 지시어(기저귀 가져와)를 듣고 수행하나요?
+                                </p>
+                                <label style="margin-right: 15px;"><input type="radio" name="q3" value="yes"> 예</label>
+                                <label style="margin-right: 15px;"><input type="radio" name="q3" value="sometimes">
+                                    가끔</label>
+                                <label><input type="radio" name="q3" value="no"> 아니오</label>
+                            </div>
+
+                            <button onclick="submitAssessment()"
+                                style="width: 100%; padding: 15px; background: #1976d2; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s;">결과
+                                확인하기</button>
+                        </div>
+                    </div>
+
+                    <!-- 2. 언어 발달 분석 리포트 모듈 (결과 확인 시 아래로 슬라이드다운 되듯 노출) -->
+                    <div id="report-container"
+                        style="display: none; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eaeaea; margin-top: 20px; text-align: center;">
+                        <h2
+                            style="font-size: 22px; color: #2c3e50; margin-bottom: 12px; border-bottom: 2px solid #1976d2; display: inline-block; padding-bottom: 5px;">
+                            언어 발달 분석 리포트</h2>
+                        <p style="color: #7f8c8d; margin-bottom: 30px; font-size: 15px;">소중하게 작성해주신 문진표를 바탕으로 종합한 분석
+                            소견입니다.</p>
+
+                        <div
+                            style="background: #fafbfc; padding: 25px; border-radius: 8px; text-align: left; margin-bottom: 35px; line-height: 1.6; color: #34495e; border-left: 4px solid #1976d2;">
+                            <p style="margin:0;">아이가 지시어를 수행하는 인지 능력은 또래 발달에 맞춰 잘 성장하고 있으나, 아직 자발적인 발화 동기 유발이 조금 더 필요한
+                                시기로 보입니다.<br><br>
+                                아래 버튼을 눌러 생활 연령 수준에 맞는 맞춤형 단어부터 차근차근 점검을 시작해 주십시오.</p>
+                        </div>
+
+                        <button id="btnGoToTracker" onclick="startTrackerGrid()"
+                            style="padding: 15px 30px; background: #e53935; color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(229, 57, 53, 0.2); transition: transform 0.2s;">
+                            <!-- JS에서 동적 문구 주입: 예) 3세 단어트이기로 바로가기 -->
+                            단어트이기로 바로가기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. 실제 그림카드 그리드 영역 (단어/문장 탭 전용) -->
+                <div id="grid-container" style="display: none;">
+                    <!-- app.js가 이 안의 HTML을 렌더링하도록 타겟 분리 -->
+                </div>
+
+                <!-- 4. 성장 차트 모아보기 뷰어 (신설) -->
+                <div id="stats-container"
+                    style="display: none; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 50px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h2
+                            style="font-size: 26px; color: #2c3e50; display: inline-block; border-bottom: 3px solid #1976d2; padding-bottom: 8px;">
+                            우리아이 성장 차트 모아보기</h2>
+                        <p style="color: #7f8c8d; margin-top: 15px; font-size: 15px;">단어 트이기 발달 현황을 연령별로 한눈에 비교하고 확인할 수
+                            있습니다.</p>
+                    </div>
+                    <!-- app.js가 1~6세 전체 차트를 이곳에 연속 렌더링 -->
+                    <div id="stats-content"></div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         동적 모달 컴포넌트 렌더링 컨테이너
+         (하드코딩된 모달 HTML을 개별 파일로 분리하고 실행 시점에 동적 주입)
+         ========================================== -->
+    <div id="modal-container-add-child"></div>
+    <div id="modal-container-confirm"></div>
+    <div id="modal-container-alert"></div>
+    <div id="modal-container-extraction"></div>
+
+    <script>
+        // 컴포넌트 HTML 동적 로드 유틸리티 함수
+        async function loadModalComponent(url, targetElementId) {
+            try {
+                const response = await fetch(url);
+                const html = await response.text();
+                document.getElementById(targetElementId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component from ${url}:`, error);
+            }
+        }
+
+        // DOM이 준비되면 분리된 모달들을 병렬로 즉석 로드 후 렌더링 초기화
+        document.addEventListener('DOMContentLoaded', async () => {
+            await Promise.all([
+                loadModalComponent('./components/modal_add_child.html', 'modal-container-add-child'),
+                loadModalComponent('./components/modal_confirm.html', 'modal-container-confirm'),
+                loadModalComponent('./components/modal_alert.html', 'modal-container-alert'),
+                loadModalComponent('./components/modal_extraction.html', 'modal-container-extraction')
+            ]);
+            // 모든 비동기 컴포넌트 로딩이 완료되면 즉시 대문 화면 초기화 실행
+            if (typeof initDashboardApp === 'function') {
+                initDashboardApp();
+            }
+        });
+    </script>
+
+    <!-- ==========================================
+         하단 타겟 플로팅 바 (Tracker 화면 전용)
+         ========================================== -->
+    <div id="floating-bar"
+        style="position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: white; padding: 15px 30px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 20px; z-index: 1000; transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #eee;">
+
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span style="font-weight: 600; color: #555;">현재 탭 말할 수 있는 단어 <span id="learnedCount"
+                    style="color: #1976d2; font-size: 1.25em; font-weight:bold;">0</span>개</span>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-left: 15px;">
+            <button onclick="showAlertModal('전체 인쇄 기능은 준비 중입니다.')"
+                style="background: #4caf50; color: white; border: none; padding: 12px 25px; border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); font-size:15px; transition: transform 0.2s;">
+                🖨️ 전체 인쇄
+            </button>
+            <button onclick="extractTargetWords()"
+                style="background: #1976d2; color: white; border: none; padding: 12px 25px; border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(25, 118, 210, 0.3); font-size:15px; transition: transform 0.2s;">
+                🎯 이번주 타겟 10개 인쇄
+            </button>
+        </div>
+    </div>
+
+    <!-- 독립 모듈화된 JS 스크립트 연결 -->
+    <script src="./js/storage.js"></script>
+    <script src="./js/data.js"></script>
+    <script src="./js/ui.js"></script>
+    <script src="./js/profile_ui.js"></script>
+    <script src="./js/dashboard.js"></script>
+    <script src="./js/app.js"></script>
+</body>
+
+</html>

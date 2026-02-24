@@ -1,0 +1,36 @@
+<!-- ==========================================
+         새 아동 추가 팝업 (Modal)
+         ========================================== -->
+<div id="addModal" class="modal-overlay">
+    <div class="modal-content">
+        <div style="display: flex; justify-content: flex-end; padding: 15px 15px 0 0;">
+            <button class="modal-close-btn"
+                style="color: #999; font-size: 1.8rem; background: none; border: none; cursor: pointer;"
+                onclick="closeAddModal()">&times;</button>
+        </div>
+
+        <div class="form-group">
+            <label>이름 (또는 닉네임)</label>
+            <input type="text" id="childName" class="form-control" placeholder="예: 김한그루" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label>생년월일 (만 나이/개월수 계산용)</label>
+            <div class="date-group">
+                <select id="birthYear"></select>
+                <select id="birthMonth"></select>
+                <select id="birthDay"></select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>성별</label>
+            <div class="gender-toggle">
+                <button id="btnMale" class="gender-btn active male" onclick="setGender('male')">남아</button>
+                <button id="btnFemale" class="gender-btn female" onclick="setGender('female')">여아</button>
+            </div>
+        </div>
+
+        <button class="btn-submit" onclick="submitNewChild()">등록 완료하기</button>
+    </div>
+</div>
