@@ -77,12 +77,23 @@ excel_to_js.py
 compress_existing.py
 
 # Documentation & Misc
-*.md
 *.txt
 !requirements.txt
-setup_google_sheets.md
 코딩
 아이콘(.ico)
+
+# Markdown — 기본 무시, 프로젝트 관리 문서만 추적
+*.md
+!backlog.md
+!research.md
+!troubleshooting.md
+!plans/*.md
+
+# Backups (git이 버전관리하므로 zip 백업 불필요)
+backups/
+
+# Node modules
+node_modules/
 
 # Picture Data Folders (Explicitly Ignore)
 01_*/
@@ -112,3 +123,6 @@ setup_google_sheets.md
 *.tar.gz
 *.rar
 *.msix
+
+# AI 작업 가이드 (하드링크, 중앙 관리)
+AI_GUIDE.md

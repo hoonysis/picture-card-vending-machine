@@ -115,7 +115,7 @@
                 </div>
 
                 <!-- 3. Save Button (Fixed Width) -->
-                <button class="btn btn-primary"
+                <button id="btn-upload-save" class="btn btn-primary"
                     style="width: 180px; flex-shrink: 0; font-size:1.1rem; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5px;"
                     onclick="if(window.uploadCard) uploadCard()">
                     <span style="font-size:1.5rem;">💾</span>
@@ -283,7 +283,8 @@
             <h2>카드 수정</h2>
             <!-- Image Preview in Modal -->
             <div style="text-align: center; margin-bottom: 15px;">
-                <img id="edit-preview-img" style="max-height: 400px; max-width: 100%; border-radius: 4px;">
+                <img id="edit-preview-img"
+                    style="max-height: 250px; max-width: 100%; border-radius: 4px; object-fit: contain;">
             </div>
             <input type="hidden" id="edit-original-folder">
             <input type="hidden" id="edit-original-image">
@@ -374,7 +375,13 @@
     <script src="js/admin/admin_data.js"></script>
     <script src="js/admin/admin_util.js"></script>
     <script src="js/admin/admin_api.js"></script>
-    <script src="js/admin/admin_ui.js?v=20260201_1615"></script>
+    <!-- Modularized Admin UI (2026-02-12) -->
+    <script src="js/admin/ui/common.js"></script>
+    <script src="js/admin/ui/filter.js"></script>
+    <script src="js/admin/ui/render.js"></script>
+    <script src="js/admin/ui/edit.js"></script>
+    <script src="js/admin/ui/input.js"></script>
+    <script src="js/admin/ui/context_menu.js"></script>
     <script>
         async function manualTagPull() {
             if (!confirm("구글 스프레드시트의 '태그' 정보를 가져와서 현재 자판기에 덮어쓰시겠습니까?\n(파일이 많으면 몇 초 정도 걸릴 수 있습니다.)")) return;
@@ -400,7 +407,10 @@
             }
         }
     </script>
-    <script src="js/logic_upload.js?v=20260201_1615"></script>
+    <script src="js/logic_upload.js?v=7"></script>
+    <script src="js/upload/analyze.js"></script>
+    <script src="js/upload/interceptor.js"></script>
+    <script src="js/upload/submit.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             console.log("🚀 Admin Page Initializing...");
@@ -418,6 +428,29 @@
             if (window.loadCards) window.loadCards();
         });
     </script>
+
+    <!-- Help Modal (Shortcuts) -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content" style="width: 500px; text-align: left;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="margin:0;">⌨️ 단축키 안내</h3>
+                <span class="close" onclick="closeHelpModal()" style="font-size:1.5rem; cursor:pointer;">&times;</span>
+            </div>
+            <ul style="line-height: 1.8; font-size: 1.05rem;">
+                <li><strong>F2</strong> : 선택한 카드 수정</li>
+                <li><strong>F3</strong> : 조음/언어 분석 실행 (입력창 포커스 시)</li>
+                <li><strong>F4</strong> : 카드 저장 (업로드)</li>
+                <li><strong>Delete</strong> : 선택한 카드 삭제</li>
+                <li><strong>Ctrl + Click</strong> : 다중 선택</li>
+                <li><strong>Shift + Click</strong> : 범위 선택</li>
+                <li><strong>Ctrl + A</strong> : 전체 선택</li>
+                <li><strong>ESC</strong> : 선택 해제 / 팝업 닫기</li>
+            </ul>
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="closeHelpModal()">닫기</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Loading Overlay -->
     <div id="loading-overlay">
