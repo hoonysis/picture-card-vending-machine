@@ -45,11 +45,10 @@
 ### 🟡 700~999줄 (경고 구간)
 | 파일 | 줄 수 | 역할 |
 |------|--------|------|
-| `js/logic_core.js` | **951줄** | 핵심 로직 (필터/렌더/사이드바/검색) — ⚠️ 미완성 리팩토링 |
-| `js/admin/admin_ui.js` | **951줄** | 어드민 UI 전반 |
-| `js/logic_preset.js` | **452줄** | 저장소(프리셋) CRUD |
+| `js/logic_core.js` | **951줄** | `local_index.html` 전용 레거시 (js/core/가 실사용 중) |
 | `js/logic_basket.js` | **573줄** | 인쇄 대기 목록, 멀티선택, 드래그, Undo/Redo |
 | `js/logic_tutorial.js` | **500줄** | Driver.js 기반 튜토리얼 |
+| `js/logic_preset.js` | **452줄** | 저장소(프리셋) CRUD |
 
 ### ✅ 정상 범위
 | 파일 | 줄 수 | 역할 |
