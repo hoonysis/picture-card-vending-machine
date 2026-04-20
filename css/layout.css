@@ -1,0 +1,135 @@
+@charset "UTF-8";
+
+
+/* === 1. Base & Layout Defaults === */
+.hidden {
+    display: none !important;
+}
+
+body {
+    font-family: 'Jua', 'Malgun Gothic', sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+h1 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* === 2. Major Containers === */
+header {
+    background: white;
+    padding: 0;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Left Sidebar Layout */
+.sidebar {
+    width: 240px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: fixed;
+    top: 120px;
+    /* Header height offset */
+    left: 0;
+    bottom: 0;
+    height: calc(100vh - 120px);
+    overflow-y: auto;
+    z-index: 5;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin-left: 240px !important;
+    /* Matches sidebar width */
+    min-height: 0;
+    gap: 20px;
+}
+
+/* === 3. Responsive Adjustments === */
+@media screen and (max-width: 1400px) {
+
+    /* 1. Sidebar Slimming */
+    .sidebar {
+        width: 200px !important;
+        top: 150px !important;
+    }
+
+    .main-content {
+        margin-left: 200px !important;
+    }
+
+    .sidebar-title,
+    .phoneme-btn {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+
+    /* 2. Header Tightening */
+    .header-top-row {
+        padding: 5px 10px;
+        gap: 5px;
+    }
+
+    .header-bottom-row {
+        padding: 5px 10px;
+        gap: 10px;
+    }
+
+    /* 3. Global Search Shrink */
+    .global-search-container {
+        width: 100%;
+    }
+
+    .global-search-input {
+        font-size: 0.9rem;
+    }
+
+    /* 4. Button & Text Scaling */
+    h1 {
+        font-size: 1rem;
+    }
+
+    .nav-btn,
+    .action-btn,
+    #add-all-btn {
+        padding: 5px 10px;
+        font-size: 0.9rem;
+    }
+
+    .copyright-banner {
+        font-size: 0.7rem;
+    }
+}

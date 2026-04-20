@@ -1,0 +1,147 @@
+@charset "UTF-8";
+
+/* === Guide & Tutorial === */
+
+/* Guide Grid (Help Modal) */
+.guide-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+.guide-col {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.guide-col h3 {
+    margin: 10px 0 15px;
+    color: #333;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.guide-col ul {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+
+.guide-col li {
+    padding: 8px 0;
+    border-bottom: 1px dashed #eee;
+    font-size: 0.95rem;
+}
+
+/* Usage Tip Button */
+#usage-tip-btn {
+    border: none;
+    color: white;
+    background-color: #4CAF50;
+    font-weight: bold;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-left: 5px;
+}
+
+#usage-tip-btn:hover {
+    background-color: #388E3C;
+    transform: translateY(-1px);
+}
+
+/* Guide Main Button */
+.guide-btn {
+    display: none;
+}
+
+#tutorial-btn,
+.guide-btn-image {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.guide-btn-image img {
+    height: 55px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
+}
+
+.guide-btn-image:hover {
+    transform: scale(1.05);
+}
+
+.guide-btn-image:active {
+    transform: scale(0.95);
+}
+
+#tutorial-btn:hover {
+    transform: scale(1.05);
+}
+
+@media print {
+    .guide-btn {
+        display: none !important;
+    }
+}
+
+/* === Tutorial (Driver.js) Custom Styles === */
+.driver-popover {
+    border: 3px solid #ff9800 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    border-radius: 12px !important;
+}
+
+body.tutorial-active .driver-popover-next-btn,
+body.tutorial-active .driver-popover-prev-btn {
+    display: none !important;
+}
+
+/* Guide Button Bounce Animation */
+@keyframes guide-bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    40% {
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+    }
+
+    60% {
+        transform: translateY(-2px) scale(1.02);
+    }
+}
+
+#tutorial-btn {
+    animation: guide-bounce 2.5s infinite ease-in-out;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    transform-origin: center bottom;
+}
+
+#tutorial-btn:hover {
+    animation: none;
+    transform: scale(1.08) !important;
+    filter: brightness(1.05);
+}

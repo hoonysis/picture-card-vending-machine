@@ -1,0 +1,291 @@
+@charset "UTF-8";
+
+@media print {
+    @page {
+        margin: 10mm;
+    }
+
+    /* === Global Reset for Print === */
+    html,
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100%;
+        height: auto !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background: transparent !important;
+        overflow: visible !important;
+        display: block !important;
+        border: none !important;
+        box-shadow: none !important;
+        max-width: 100%;
+    }
+
+    body {
+        width: 96%;
+        margin: 0 auto !important;
+    }
+
+    /* === Hide UI Elements === */
+    header,
+    .sidebar,
+    .preset-section,
+    .filter-section,
+    .inventory-grid,
+    .print-controls,
+    .empty-msg,
+    .basket-header,
+    .copyright-banner,
+    #custom-context-menu,
+    #image-modal,
+    .modal-overlay,
+    #custom-modal-overlay,
+    #upload-modal-overlay,
+    #input-guide-modal,
+    #tutorial-btn,
+    .global-search-container,
+    .card-menu-btn,
+    .remove-btn,
+    .undo-redo-controls {
+        display: none !important;
+    }
+
+    /* === Main Container Reset === */
+    .container,
+    .main-content,
+    .basket-section {
+        display: block !important;
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+        left: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        min-height: auto;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+    }
+
+    /* === Basket Grid === */
+    #basket-grid {
+        display: grid !important;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0;
+        justify-content: center;
+        align-content: start;
+        background: transparent !important;
+        border: none !important;
+        gap: 1%;
+        overflow: visible;
+    }
+
+    /* === Card Reset === */
+    .card.in-basket {
+        border: 1px solid #ccc;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        box-shadow: none;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: white !important;
+        overflow: hidden;
+        opacity: 1 !important;
+        visibility: visible !important;
+        color: #000 !important;
+    }
+
+    /* Remove border if requested */
+    body.hide-border .card.in-basket,
+    body.hide-border .print-card {
+        border: none !important;
+    }
+
+    /* Hide text if requested */
+    body.hide-text .card-name {
+        display: none !important;
+    }
+
+    body.hide-text .card-img {
+        height: 95%;
+        width: 95%;
+    }
+
+    .card-img {
+        object-fit: contain;
+        max-width: 90%;
+        max-height: 80%;
+        background: transparent !important;
+    }
+
+    .card-name {
+        width: 100%;
+        font-weight: bold;
+        color: #000;
+        text-align: center;
+        margin-top: 0;
+        padding: 0;
+        background: transparent;
+    }
+
+    /* Hide Tooltips */
+    .card.has-tooltip::after,
+    .card.has-tooltip::before {
+        display: none !important;
+    }
+
+    /* Print Selected Only */
+    body.print-selected-only .card.in-basket:not(.selected) {
+        display: none !important;
+    }
+
+    body.print-selected-only .card.in-basket.selected {
+        border: 1px solid #ccc !important;
+        background-color: transparent !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    body.print-selected-only .card.in-basket {
+        clear: none !important;
+    }
+
+    body.print-selected-only .card.in-basket.force-new-row {
+        clear: both !important;
+    }
+
+    /* === Print Layout Modes === */
+
+    /* 1. 2x1 (2 Cards) - Float */
+    body.print-mode-2x1 #basket-grid {
+        display: block !important;
+    }
+
+    body.print-mode-2x1 #basket-grid::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    body.print-mode-2x1 .card.in-basket {
+        float: left !important;
+        width: 49% !important;
+        height: 190mm !important;
+        margin: 0 0.5% 10px 0.5% !important;
+        padding: 0 !important;
+    }
+
+    body.print-mode-2x1 .card-name {
+        font-size: 28px;
+    }
+
+    /* 2. 4x2 (8 Cards) - Float */
+    body.print-mode-4x2 #basket-grid {
+        display: block !important;
+    }
+
+    body.print-mode-4x2 #basket-grid::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    body.print-mode-4x2 .card.in-basket {
+        float: left !important;
+        width: 24% !important;
+        height: 95mm !important;
+        margin: 0 0.5% 5px 0.5% !important;
+        padding: 0 !important;
+    }
+
+    body.print-mode-4x2 .card-name {
+        font-size: 16px;
+    }
+
+    /* 3. 3x2 (6 Cards) - Float */
+    body.print-mode-3x2 #basket-grid {
+        display: block !important;
+    }
+
+    body.print-mode-3x2 #basket-grid::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    body.print-mode-3x2 .card.in-basket {
+        float: left !important;
+        width: 24% !important;
+        height: 95mm !important;
+        margin: 0 0.5% 5px 0.5% !important;
+        padding: 0 !important;
+    }
+
+    body.print-mode-3x2 .card.in-basket:nth-child(3n+1) {
+        clear: both;
+    }
+
+    body.print-mode-3x2 .card-name {
+        font-size: 16px;
+    }
+
+    /* 4. 5x3 (15 Cards) - Grid */
+    body.print-mode-5x3 #basket-grid {
+        grid-template-columns: repeat(5, 1fr) !important;
+        grid-auto-rows: 62mm !important;
+        gap: 2mm !important;
+    }
+
+    body.print-mode-5x3 .card.in-basket {
+        padding: 0 !important;
+    }
+
+    body.print-mode-5x3 .card-name {
+        font-size: 14px;
+    }
+
+    /* 5. 7x4 (28 Cards) - Grid */
+    body.print-mode-7x4 #basket-grid {
+        grid-template-columns: repeat(7, 1fr) !important;
+        grid-auto-rows: 46mm !important;
+        gap: 2mm !important;
+    }
+
+    body.print-mode-7x4 .card.in-basket {
+        padding: 0 !important;
+    }
+
+    body.print-mode-7x4 .card-name {
+        font-size: 13px;
+    }
+
+    /* 6. 10x5 (50 Cards) - Grid */
+    body.print-mode-10x5 #basket-grid {
+        grid-template-columns: repeat(10, 1fr) !important;
+        grid-auto-rows: 36mm !important;
+        gap: 2mm !important;
+    }
+
+    body.print-mode-10x5 .card.in-basket {
+        padding: 0 !important;
+    }
+
+    body.print-mode-10x5 .card-name {
+        font-size: 9px;
+    }
+
+    /* Broken Image Hide */
+    img[src=""],
+    img:not([src]) {
+        display: none !important;
+    }
+}
