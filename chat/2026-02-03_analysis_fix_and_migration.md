@@ -36,3 +36,8 @@
 *   **엑셀은 0번부터**: `iloc[0]`이 국룰이다.
 *   **폴더 이사는 신중하게**: `cp`로 데이터를 옮기고, `git reset`으로 코드를 지켜라.
 *   **로그보다 진단 키트**: `Error Log` 뒤지는 것보다 `debug_status` 한 번 호출하는 게 빠르다.
+
+## 5. 최종 검증 (Final Verification)
+*   **코드 백업 버튼**: `server.py`가 동적으로 현재 경로(`BASE_DIR`)를 압축하므로, 폴더명이 바뀌어도 수정 없이 정상 작동함을 확인.
+*   **Git Push**: `AI_GUIDE.md` 및 `chat/` 로그를 포함하여 GitHub에 성공적으로 업로드 완료 (Commit `0abfa27`).
+

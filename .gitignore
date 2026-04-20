@@ -125,4 +125,9 @@ node_modules/
 *.msix
 
 # AI 작업 가이드 (하드링크, 중앙 관리)
-AI_GUIDE.md
+CLAUDE.md
+
+# Claude Code 런처 (로컬 전용)
+claude (new).bat
+claude (resume).bat
+claude (vscode).bat
