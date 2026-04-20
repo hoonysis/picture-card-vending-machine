@@ -50,6 +50,7 @@ from routes.cards import cards_bp
 from routes.upload import upload_bp
 from routes.user import user_bp
 from routes.admin import admin_bp
+from routes.deploy import deploy_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(static_bp)
@@ -57,6 +58,7 @@ app.register_blueprint(cards_bp)
 app.register_blueprint(upload_bp)
 app.register_blueprint(user_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(deploy_bp)
 
 print(f"\n{'='*40}\n STARTING SERVER: {DEPLOYMENT_VERSION}\n BASE_DIR: {BASE_DIR}\n{'='*40}\n")
 
