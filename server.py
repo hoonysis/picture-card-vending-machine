@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 import os
 
 # ── 설정 ──
@@ -35,6 +35,23 @@ app.secret_key = os.environ.get('SECRET_KEY', '')
 if not app.secret_key:
     raise RuntimeError("SECRET_KEY 환경변수 미설정. .env 파일 또는 systemd EnvironmentFile 확인.")
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+
+@app.after_request
+def prevent_stale_app_cache(response):
+    no_cache_paths = (
+        request.path.startswith('/api/') or
+        request.path.startswith('/js/') or
+        request.path.startswith('/css/') or
+        request.path in {'/', '/admin', '/admin_test', '/style.css', '/data.js', '/manifest.json', '/sw.js'}
+    )
+
+    if no_cache_paths:
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        response.headers['X-LiteSpeed-Cache-Control'] = 'no-cache'
+    return response
 
 # 매니저를 app.config에 등록 (Blueprint에서 current_app.config로 접근)
 app.config['data_manager'] = data_manager

@@ -20,13 +20,15 @@ def github_webhook():
     """GitHub push webhook → git pull + systemd 서비스 재시작."""
     try:
         secret = os.environ.get('DEPLOY_SECRET', '')
-        if secret:
-            signature = request.headers.get('X-Hub-Signature-256', '')
-            expected = 'sha256=' + hmac.new(
-                secret.encode(), request.data, hashlib.sha256
-            ).hexdigest()
-            if not hmac.compare_digest(signature, expected):
-                return jsonify({'error': 'Invalid signature'}), 403
+        if not secret:
+            return jsonify({'error': 'DEPLOY_SECRET is not configured'}), 403
+
+        signature = request.headers.get('X-Hub-Signature-256', '')
+        expected = 'sha256=' + hmac.new(
+            secret.encode(), request.data, hashlib.sha256
+        ).hexdigest()
+        if not hmac.compare_digest(signature, expected):
+            return jsonify({'error': 'Invalid signature'}), 403
 
         base_dir = current_app.config['BASE_DIR']
         result = subprocess.run(

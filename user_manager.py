@@ -4,6 +4,13 @@ import hashlib
 import json
 
 class UserManager:
+    HIDDEN_USER_NAMES = {
+        'guest',
+        'hoon-admin',
+        'beta_direct_art_test',
+        'beta_regression_check',
+    }
+
     def __init__(self, base_dir, admin_pass):
         self.base_dir = base_dir
         self.admin_pass = admin_pass
@@ -12,7 +19,7 @@ class UserManager:
     def check_auth(self, password):
         return password == self.admin_pass
 
-    def get_user_dir(self, user_id):
+    def get_user_dir(self, user_id, create=True):
         # 1. [Legacy] Check 'user_images' (Admins, Pre-existing)
         legacy_safe_id = "".join([c for c in user_id if c.isalnum() or c in ('-', '_')])
         if not legacy_safe_id: legacy_safe_id = "guest"
@@ -21,11 +28,23 @@ class UserManager:
         if os.path.exists(legacy_path):
             return legacy_path
         
-        # 2. [Consolidation] Use 'user_images' for Beta too, but with 'beta_' prefix + Hash
+        # 2. [Legacy Beta] PythonAnywhere may already have folders that use
+        # the full MD5 hash. Keep reading those folders after migration.
+        full_hash_path = os.path.join(
+            self.base_dir,
+            self.user_images_dir,
+            f"beta_{hashlib.md5(user_id.encode('utf-8')).hexdigest()}"
+        )
+        if os.path.exists(full_hash_path):
+            return full_hash_path
+
+        # 3. [Consolidation] Use 'user_images' for Beta too, but with 'beta_' prefix + Hash
         folder_name = f"beta_{hashlib.md5(user_id.encode('utf-8')).hexdigest()[:8]}"
         beta_path = os.path.join(self.base_dir, self.user_images_dir, folder_name)
         
         if not os.path.exists(beta_path):
+            if not create:
+                return None
             os.makedirs(beta_path, exist_ok=True)
             # Save the Real Name to identify this hash folder later
             try:
@@ -76,7 +95,8 @@ class UserManager:
                             try:
                                 with open(name_file, 'r', encoding='utf-8') as f:
                                     real_name = f.read().strip()
-                                    if real_name: users.append(real_name)
+                                    if real_name and real_name not in self.HIDDEN_USER_NAMES:
+                                        users.append(real_name)
                             except: pass
         except Exception as e:
             print(f"Error listing users: {e}")
@@ -85,10 +105,13 @@ class UserManager:
         return sorted(users)
 
     def load_presets(self, user_id):
-        user_dir = self.get_user_dir(user_id)
-        path = os.path.join(user_dir, 'presets.json')
+        if user_id in self.HIDDEN_USER_NAMES:
+            return []
+
+        user_dir = self.get_user_dir(user_id, create=False)
+        path = os.path.join(user_dir, 'presets.json') if user_dir else None
         
-        if os.path.exists(path):
+        if path and os.path.exists(path):
             try:
                 with open(path, 'r', encoding='utf-8') as f:
                     return json.load(f)

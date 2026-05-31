@@ -134,11 +134,11 @@ def handle_user_cards():
     base = current_app.config['BASE_DIR']
 
     user_id = _extract_user_id()
-    user_dir = um.get_user_dir(user_id)
 
     if request.method == 'GET':
+        user_dir = um.get_user_dir(user_id, create=False)
         cards = []
-        if os.path.exists(user_dir):
+        if user_dir and os.path.exists(user_dir):
             files = os.listdir(user_dir)
             try:
                 files.sort(key=lambda x: os.path.getmtime(os.path.join(user_dir, x)))
@@ -158,13 +158,14 @@ def handle_user_cards():
         return jsonify(cards)
 
     if request.method == 'DELETE':
+        user_dir = um.get_user_dir(user_id, create=False)
         req_data = request.json
         filename = req_data.get('filename')
         if not filename:
             return jsonify({'error': 'Filename required'}), 400
 
-        file_path = os.path.join(user_dir, filename)
-        if os.path.exists(file_path):
+        file_path = os.path.join(user_dir, filename) if user_dir else None
+        if file_path and os.path.exists(file_path):
             try:
                 os.remove(file_path)
             except:

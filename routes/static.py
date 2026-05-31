@@ -1,17 +1,63 @@
-from flask import Blueprint, request, send_file, abort, current_app, session, redirect, url_for
+from flask import Blueprint, request, send_file, send_from_directory, abort, current_app
 from urllib.parse import unquote
 import os
+from pathlib import Path
 import unicodedata
 from routes.auth import requires_auth
 
 static_bp = Blueprint('static_bp', __name__)
+
+ALLOWED_ROOT_FILES = {
+    'style.css': 'text/css',
+    'data.js': 'application/javascript',
+    'manifest.json': 'application/manifest+json',
+    'sw.js': 'application/javascript',
+}
+
+ALLOWED_TOP_DIRS = {'images', 'css', 'js', '범주', 'user_images', 'ㅇ(받침)'}
+IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.webp', '.gif', '.ico', '.svg'}
+ALLOWED_INDEX_FILES = {'index.html', 'local_index.html'}
+
+
+def _is_card_dir(name):
+    return any(name.startswith(f"{idx:02d}_") for idx in range(1, 21))
+
+
+def _is_safe_path(path):
+    parts = Path(path.replace('\\', '/')).parts
+    return bool(parts) and all(part not in ('', '.', '..') and not part.startswith('.') for part in parts)
+
+
+def _send_allowed_file(root_name, rel_path, mimetype=None):
+    base = Path(current_app.config['BASE_DIR']).resolve()
+    root = (base / root_name).resolve()
+    if base not in root.parents and root != base:
+        abort(404)
+
+    fm = current_app.config['file_manager']
+    robust_path = fm.find_file_robustly(f"{root_name}/{rel_path}")
+    if robust_path:
+        resolved = Path(robust_path).resolve()
+        if resolved == root or root in resolved.parents:
+            return send_file(resolved, mimetype=mimetype)
+
+    return send_from_directory(root, rel_path, mimetype=mimetype)
+
+
+def _get_index_file():
+    index_file = os.environ.get('APP_INDEX_FILE', 'index.html').strip() or 'index.html'
+    if index_file not in ALLOWED_INDEX_FILES:
+        index_file = 'index.html'
+    return index_file
 
 
 @static_bp.route('/')
 def serve_index():
     base = current_app.config['BASE_DIR']
     referer = request.headers.get('Referer', '')
-    if 'hangruclass' not in referer and 'localhost' not in referer:
+    host = request.host.split(':', 1)[0]
+    is_local = host in {'localhost', '127.0.0.1', '::1'}
+    if not is_local and 'hangruclass' not in referer:
         msg = """
         <div style='text-align:center; padding:50px; font-family:"Malgun Gothic", sans-serif;'>
             <h1>ℹ️ 여기는 자판기 서버페이지 입니다.</h1>
@@ -29,7 +75,7 @@ def serve_index():
         </div>
         """
         return msg, 403
-    return send_file(os.path.join(base, 'index.html'))
+    return send_file(os.path.join(base, _get_index_file()))
 
 
 @static_bp.route('/admin')
@@ -60,57 +106,41 @@ def serve_data_js():
 
 @static_bp.route('/css/<path:filename>')
 def serve_css_folder(filename):
-    base = current_app.config['BASE_DIR']
-    return send_file(os.path.join(base, 'css', filename), mimetype='text/css')
+    if not _is_safe_path(filename):
+        abort(404)
+    return _send_allowed_file('css', filename, mimetype='text/css')
 
 
 @static_bp.route('/js/<path:filename>')
 def serve_js_folder(filename):
-    base = current_app.config['BASE_DIR']
-    return send_file(os.path.join(base, 'js', filename), mimetype='application/javascript')
+    if not _is_safe_path(filename):
+        abort(404)
+    return _send_allowed_file('js', filename, mimetype='application/javascript')
 
 
 @static_bp.route('/<path:path>')
 def serve_static(path):
-    base = current_app.config['BASE_DIR']
-    fm = current_app.config['file_manager']
-    um = current_app.config['user_manager']
-    USER_IMAGES_DIR = 'user_images'
+    decoded_path = unicodedata.normalize('NFC', unquote(path).replace('\\', '/'))
+    if not _is_safe_path(decoded_path):
+        abort(404)
 
-    decoded_path = unquote(path)
-    full_path = os.path.join(base, decoded_path)
+    root, _, rel_path = decoded_path.partition('/')
+    if not rel_path:
+        mimetype = ALLOWED_ROOT_FILES.get(root)
+        if mimetype:
+            base = current_app.config['BASE_DIR']
+            return send_file(os.path.join(base, root), mimetype=mimetype)
+        abort(404)
 
-    # 1. 직접 확인
-    if os.path.exists(full_path) and os.path.isfile(full_path):
-        return send_file(full_path)
+    if root in {'css', 'js'}:
+        mimetype = 'text/css' if root == 'css' else 'application/javascript'
+        return _send_allowed_file(root, rel_path, mimetype=mimetype)
 
-    # 2. NFC/NFD 정규화
-    for norm in ['NFC', 'NFD']:
-        norm_p = unicodedata.normalize(norm, decoded_path)
-        fp = os.path.join(base, norm_p)
-        if os.path.exists(fp) and os.path.isfile(fp):
-            return send_file(fp)
+    if root == 'images':
+        return _send_allowed_file(root, rel_path)
 
-    # 3. 강건한 반복 탐색
-    robust_path = fm.find_file_robustly(decoded_path)
-    if robust_path:
-        return send_file(robust_path)
-
-    # 4. user_images 폴백 (레거시 beta_ 경로)
-    if 'beta_' in path and not path.startswith(USER_IMAGES_DIR):
-        fixed_path = os.path.join(USER_IMAGES_DIR, path)
-        retry = fm.find_file_robustly(fixed_path)
-        if retry:
-            return send_file(retry)
-
-    # 5. 유저 디렉토리에서 파일명으로 최종 탐색
-    user_id = request.args.get('user', 'guest')
-    user_dir = um.get_user_dir(user_id)
-    if os.path.exists(user_dir):
-        target_file = os.path.basename(decoded_path)
-        rel_path = os.path.relpath(os.path.join(user_dir, target_file), base)
-        robust_user = fm.find_file_robustly(rel_path)
-        if robust_user:
-            return send_file(robust_user)
+    if root in {'범주', 'user_images'} or _is_card_dir(root) or root == 'ㅇ(받침)':
+        if Path(rel_path).suffix.lower() in IMAGE_EXTENSIONS:
+            return _send_allowed_file(root, rel_path)
 
     abort(404)
