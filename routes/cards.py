@@ -15,11 +15,7 @@ def list_cards():
     try:
         dm = current_app.config['data_manager']
         fm = current_app.config['file_manager']
-        um = current_app.config['user_manager']
-        base = current_app.config['BASE_DIR']
 
-        user_id = request.args.get('user', 'guest')
-        user_dir = um.get_user_dir(user_id)
         data = fm.load_data()
         query = request.args.get('q', '').strip()
         search_norm = dm.normalize_for_search(query) if query else None
