@@ -496,5 +496,6 @@ function initWelcomePopup() {
 
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(initTutorial, 500);
-    setTimeout(initWelcomePopup, 1000);
+    // 첫 방문 환영 팝업 자동 표시 비활성화 (요청). 가이드는 헤더의 가이드 버튼으로 계속 사용 가능.
+    // setTimeout(initWelcomePopup, 1000);
 });
