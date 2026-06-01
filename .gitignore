@@ -82,12 +82,8 @@ compress_existing.py
 코딩
 아이콘(.ico)
 
-# Markdown — 기본 무시, 프로젝트 관리 문서만 추적
+# Markdown — 전부 로컬 전용 (5파일·하드링크는 아래 개별 라인에서 이미 무시)
 *.md
-!backlog.md
-!research.md
-!troubleshooting.md
-!plans/*.md
 
 # Backups (git이 버전관리하므로 zip 백업 불필요)
 backups/
@@ -131,3 +127,23 @@ CLAUDE.md
 claude (new).bat
 claude (resume).bat
 claude (vscode).bat
+
+# Codex 셋업 (개인 로컬 환경)
+AGENTS.md
+codex (new).bat
+codex (resume).bat
+
+# 표준 5파일 + 아카이브 (Local-only)
+_작업원칙.md
+_작업원칙_디자인.md
+_현재작업.md
+_의사결정로그.md
+_참조인덱스.md
+_아키텍처.md
+_archive/
+
+# Local AI harness docs
+_작업루틴.md
+_컨텍스트맵.md
+_검증매트릭스.md
+_작업카드/

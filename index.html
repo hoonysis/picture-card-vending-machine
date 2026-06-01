@@ -22,9 +22,10 @@
         document.addEventListener("DOMContentLoaded", () => {
             // 1. Check if running in Electron (via preload.js contextBridge)
             const isApp = window.electron !== undefined;
+            const isLocalBrowser = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
 
             // 2. If NOT App (Web Browser), Block Access
-            if (!isApp) {
+            if (!isApp && !isLocalBrowser) {
                 // Create Blocking Modal
                 const modal = document.createElement('div');
                 modal.id = 'app-required-modal';
@@ -373,7 +374,7 @@
         <script src="js/core/components.js"></script>
         <script src="js/core/filter.js"></script>
         <script src="js/core/search.js"></script>
-        <script src="js/core/render.js"></script>
+        <script src="js/core/render.js?v=3"></script>
         <script src="js/core/main.js"></script>
         <script src="js/logic_basket.js?v=6"></script>
         <script src="js/logic_print.js?v=7"></script>
@@ -386,7 +387,7 @@
         <script src="js/logic_modal.js?v=6"></script>
         <script src="js/logic_tutorial.js?v=10"></script>
         <!-- [Smart Gate] Persistent Login & Access Control -->
-        <script src="js/temp_gate.js?v=2"></script>
+        <script src="js/temp_gate.js?v=3"></script>
 
         <script>
             init();

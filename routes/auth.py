@@ -71,3 +71,17 @@ def login():
 def logout():
     session.pop('is_admin', None)
     return redirect(url_for('auth.login'))
+
+
+# ── POST /api/admin/verify_pin (대문 사용자 관리용 PIN 검증) ──
+# 대문(temp_gate.js)의 ⚙️ 사용자 관리 진입 시 호출. 기존 ADMIN_PIN을 재사용하며,
+# 통과하면 세션을 is_admin으로 승격시켜 이후 관리 API(@requires_auth)를 쓸 수 있게 한다.
+
+@auth_bp.route('/api/admin/verify_pin', methods=['POST'])
+def verify_pin():
+    um = current_app.config['user_manager']
+    pin = (request.json or {}).get('pin', '')
+    if um.check_auth(pin):
+        session['is_admin'] = True
+        return jsonify({'success': True})
+    return jsonify({'success': False, 'error': 'PIN이 올바르지 않습니다.'}), 401

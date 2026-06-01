@@ -39,6 +39,7 @@ def update_reference():
 # ── GET /api/debug/status ──
 
 @admin_bp.route('/api/debug/status', methods=['GET'])
+@requires_auth
 def debug_status():
     dm = current_app.config['data_manager']
     base = current_app.config['BASE_DIR']
@@ -63,6 +64,7 @@ def debug_status():
 # ── POST /api/sync/pull_tags ──
 
 @admin_bp.route('/api/sync/pull_tags', methods=['POST'])
+@requires_auth
 def manual_tag_pull():
     try:
         dm = current_app.config['data_manager']

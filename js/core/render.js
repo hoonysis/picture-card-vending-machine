@@ -146,6 +146,16 @@ window.renderCards = function () {
 
         // 언어 모드 정렬: 가나다순
         filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ko'));
+
+        // 언어 모드는 같은 단어/같은 이미지가 조음 위치별로 중복 등록되어 있어도
+        // 화면에서는 한 번만 보여준다. 단어가 같아도 이미지가 다르면 별도 카드로 유지한다.
+        const seenKeys = new Set();
+        filtered = filtered.filter(card => {
+            const key = `${card.name || ''}|${card.image || ''}`;
+            if (seenKeys.has(key)) return false;
+            seenKeys.add(key);
+            return true;
+        });
     }
 
     // 렌더링
@@ -180,7 +190,13 @@ window.renderCards = function () {
             if (window.showCardContextMenu) window.showCardContextMenu(e, card);
         };
 
-        const imgPath = card.image_path ? `/${card.image_path}` : `images/${card.image}.png`;
+        const encodePath = (value) => String(value || '')
+            .split('/')
+            .map(part => encodeURIComponent(part))
+            .join('/');
+        const imgPath = card.image_path
+            ? `/${encodePath(card.image_path)}`
+            : `/${encodePath(card.folder)}/${encodeURIComponent(card.image)}`;
 
         el.innerHTML = `
             <img src="${imgPath}" class="card-img" onerror="this.src='images/apple.png'">

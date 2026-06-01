@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify, current_app
 from PIL import Image
 import os
 import unicodedata
+from datetime import datetime
+from routes.auth import requires_auth
 
 user_bp = Blueprint('user', __name__)
 
@@ -36,6 +38,46 @@ def list_users():
     um = current_app.config['user_manager']
     users = um.list_users()
     return jsonify(users)
+
+
+# ── PATCH /api/users (이름 변경) — 관리자 전용 ──
+
+@user_bp.route('/api/users', methods=['PATCH'])
+@requires_auth
+def rename_user():
+    um = current_app.config['user_manager']
+    req = request.json or {}
+    old_name = (req.get('old_name', '') or '').strip()
+    new_name = (req.get('new_name', '') or '').strip()
+
+    ok, error = um.rename_user(old_name, new_name)
+    if not ok:
+        return jsonify({'error': error}), 400
+    print(f"Renamed User: {old_name} -> {new_name}")
+    return jsonify({'success': True})
+
+
+# ── DELETE /api/users (삭제 + 백업) — 관리자 전용 ──
+
+@user_bp.route('/api/users', methods=['DELETE'])
+@requires_auth
+def delete_user():
+    um = current_app.config['user_manager']
+    base = current_app.config['BASE_DIR']
+    req = request.json or {}
+    name = (req.get('name', '') or '').strip()
+    if not name:
+        return jsonify({'error': 'Name required'}), 400
+
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    safe_name = "".join(c for c in name if c.isalnum() or c in ('-', '_')) or 'user'
+    backup_dest = os.path.join(base, 'backups', 'deleted_users', f"{timestamp}_{safe_name}")
+
+    ok, error = um.delete_user(name, backup_dest)
+    if not ok:
+        return jsonify({'error': error}), 400
+    print(f"Deleted User: {name} (backup: {backup_dest})")
+    return jsonify({'success': True})
 
 
 # ── POST /upload (게스트/레거시 업로드) ──

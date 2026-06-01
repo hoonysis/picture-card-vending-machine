@@ -15,6 +15,8 @@ class FileManager:
         self.excel_file = 'word.xlsx'
         self.data_file = 'data.js'
         self.user_images_dir = 'user_images'
+        self._data_cache = None
+        self._data_cache_mtime = None
 
     def safe_filename(self, filename):
         filename = unicodedata.normalize('NFC', filename)
@@ -86,6 +88,10 @@ class FileManager:
         path = os.path.join(self.base_dir, self.excel_file)
         if not os.path.exists(path): return []
         try:
+            current_mtime = os.path.getmtime(path)
+            if self._data_cache is not None and self._data_cache_mtime == current_mtime:
+                return [dict(item) for item in self._data_cache]
+
             df = pd.read_excel(path).fillna('')
             for col in ['main', 'sub', 'name', 'folder', 'image', 'part_of_speech', 'language_category', 'search_keywords']:
                 if col not in df.columns: df[col] = ''
@@ -98,10 +104,15 @@ class FileManager:
             ]
             
             if self.data_manager:
-                return self.data_manager.sort_data(data_list)
-            return data_list
+                data_list = self.data_manager.sort_data(data_list)
+
+            self._data_cache = [dict(item) for item in data_list]
+            self._data_cache_mtime = current_mtime
+            return [dict(item) for item in data_list]
             
-        except: return []
+        except Exception as e:
+            print(f"[ERROR] Failed to load data: {e}")
+            return []
 
     def save_data(self, data_list):
         try:
@@ -113,6 +124,8 @@ class FileManager:
             
             js_content = f"// Created by server.py\nconst soundData = {json.dumps(data_list, ensure_ascii=False, indent=4)};"
             with open(os.path.join(self.base_dir, self.data_file), 'w', encoding='utf-8') as f: f.write(js_content)
+            self._data_cache = [dict(item) for item in data_list]
+            self._data_cache_mtime = os.path.getmtime(os.path.join(self.base_dir, self.excel_file))
             return True
         except Exception as e:
             print(f"[ERROR] Failed to save data: {e}")
